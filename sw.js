@@ -1,6 +1,6 @@
 // Einsatz-Assistent – Service Worker (Offline-Cache)
-const CACHE = 'einsatz-assistent-v39';
-const APP_VERSION='5.0';
+const CACHE = 'einsatz-assistent-v51';
+const APP_VERSION='6.3';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,9 @@ const ASSETS = [
   './icon-180.png',
   './icon-192.png',
   './icon-512.png',
-  './favicon.png'
+  './favicon.png',
+  './lib/pdf.min.mjs',
+  './lib/pdf.worker.min.mjs'
 ];
 
 // Install: cache the app shell (single self-contained HTML)
