@@ -81,9 +81,9 @@
 .btn-import.secondary{background:#e2e8f0;color:#334155;}
 .imp-link{display:block;width:100%;margin-top:14px;padding:13px;border:1.5px dashed var(--accent,#1f3877);background:rgba(31,56,119,.04);color:var(--accent,#1f3877);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;}
 .imp-link:hover{background:rgba(31,56,119,.08);}
-.drafts-clear-btn{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:9px 14px;border:1.5px solid #e3b3b8;background:rgba(176,0,32,.04);color:#b00020;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.14s;}
+.drafts-clear-btn{display:flex; width:100%; justify-content:center; align-items:center; gap:7px; margin-top:16px; padding:12px 14px;border:1.5px solid #e3b3b8;background:rgba(176,0,32,.04);color:#b00020;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.14s;}
 .drafts-clear-btn:hover{background:rgba(176,0,32,.09);border-color:#c98a90;}
-.drafts-clear-btn:active{transform:scale(.98);}
+.drafts-clear-btn:active{transform:scale(.99);}
 .imp-flights{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;}
 .imp-tbl{width:100%;border-collapse:collapse;font-size:12px;}
 .imp-tbl th{text-align:left;font-weight:600;color:#334155;padding:4px 6px;border-bottom:1px solid #e2e8f0;}
@@ -246,7 +246,7 @@
   .consent-row input[type=checkbox]{width:22px; height:22px; flex:none; margin-top:1px; accent-color:var(--navy);}
   .consent-row label{font-size:13px; line-height:1.5; color:var(--ink); font-weight:700;}
   .consent-confirm-btn{
-    width:100%; padding:16px; border-radius:var(--radius); font-size:15.5px; font-weight:700; border:none;
+    width:100%; margin-top:14px; padding:16px; border-radius:var(--radius); font-size:15.5px; font-weight:700; border:none;
     background:linear-gradient(180deg,var(--navy),var(--navy-deep)); color:#fff; cursor:pointer; box-shadow:0 4px 14px rgba(31,56,119,.3);
   }
   .consent-confirm-btn:disabled{background:#c3cdd6; cursor:not-allowed; box-shadow:none;}
@@ -386,7 +386,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.5';
+const APP_VERSION='6.5.1';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
