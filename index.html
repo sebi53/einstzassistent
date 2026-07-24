@@ -81,6 +81,9 @@
 .btn-import.secondary{background:#e2e8f0;color:#334155;}
 .imp-link{display:block;width:100%;margin-top:14px;padding:13px;border:1.5px dashed var(--accent,#1f3877);background:rgba(31,56,119,.04);color:var(--accent,#1f3877);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;}
 .imp-link:hover{background:rgba(31,56,119,.08);}
+.drafts-clear-btn{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:9px 14px;border:1.5px solid #e3b3b8;background:rgba(176,0,32,.04);color:#b00020;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.14s;}
+.drafts-clear-btn:hover{background:rgba(176,0,32,.09);border-color:#c98a90;}
+.drafts-clear-btn:active{transform:scale(.98);}
 .imp-flights{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;}
 .imp-tbl{width:100%;border-collapse:collapse;font-size:12px;}
 .imp-tbl th{text-align:left;font-weight:600;color:#334155;padding:4px 6px;border-bottom:1px solid #e2e8f0;}
@@ -352,8 +355,8 @@
       <button class="home-btn" id="homeBtn" type="button" aria-label="Zum Startbildschirm" title="Zum Startbildschirm" style="display:none">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
       </button>
-      <button class="home-btn" id="demoBtn" type="button" aria-label="Demo-Daten füllen" title="Demo-Modus: alle Felder mit Zufallswerten füllen" style="display:none">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>
+      <button class="home-btn" id="demoBtn" type="button" aria-label="Demo-Daten füllen" title="Demo-Modus: alle Felder mit Beispielwerten füllen" style="display:none">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.455Z"/></svg>
       </button>
     </div>
     <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
@@ -383,7 +386,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.4';
+const APP_VERSION='6.5';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -701,37 +704,86 @@ function escapeHtml(value){
    Werten. NIEMALS blockierend; reine Hinweise. Gibt [{label,msg}] zurück. */
 function _num(v){ const n=parseFloat(String(v).replace(',','.')); return isNaN(n)?null:n; }
 function _rangeWarn(label, val, min, max, unit){ const n=_num(val); if(n==null) return null; if(n<min||n>max) return {label, msg:`${label} ${n}${unit} liegt außerhalb des plausiblen Bereichs (${min}–${max}${unit}).`}; return null; }
+function _dateWarn(label, val){
+  if(!val) return null;
+  const d=new Date(val); if(isNaN(d.getTime())) return null;
+  const now=new Date();
+  if(d>now) return {label, msg:`${label} liegt in der Zukunft.`};
+  const age=(now-d)/(365.25*864e5);
+  if(age>130) return {label, msg:`${label} liegt sehr weit in der Vergangenheit (>130 Jahre).`};
+  return null;
+}
+/* Plausibilitäts-Soft-Prüfung (Issue 10, v6.5 erweitert) – warnt vor Tippfehlern in
+   medizinischen Werten. Gilt für ALLE Protokolle (ADAC/Allianz/Aufklärung/Feedback)
+   und ALLE Vital-/Messwerte. NIEMALS blockierend; reine Hinweise. Leere Felder
+   werden übersprungen (parseFloat→NaN→null). Gibt [{label,msg}] zurück. */
 function plausibilityWarnings(){
   const w=[]; const a=answers||{};
   let r;
+  // --- Anthropometrie / Demografie ---
   if(r=_rangeWarn('Gewicht',a.gewicht,0.5,500,' kg'))w.push(r);
   if(r=_rangeWarn('Größe',a.groesse,30,250,' cm'))w.push(r);
+  if(r=_rangeWarn('Alter',a.age,0,130,' Jahre'))w.push(r);
+  if(r=_dateWarn('Geburtsdatum',a.geboren))w.push(r);
+  if(r=_dateWarn('Geburtsdatum',a.geburtsdatum))w.push(r);
+  // --- ADAC Erst-Vitalwerte ---
   if(r=_rangeWarn('GCS',a.gcsSumme,3,15,''))w.push(r);
   if(r=_rangeWarn('AF',a.afWert,0,60,'/min'))w.push(r);
   if(r=_rangeWarn('SpO₂',a.sao2Wert,50,100,'%'))w.push(r);
   if(r=_rangeWarn('HF',a.hf,20,250,'/min'))w.push(r);
   if(r=_rangeWarn('RR systolisch',a.rrSys,30,300,''))w.push(r);
   if(r=_rangeWarn('RR diastolisch',a.rrDia,20,250,''))w.push(r);
+  if(r=_rangeWarn('NRS (Schmerz)',a.nrs,0,10,''))w.push(r);
+  if(r=_rangeWarn('O₂-Sonde',a.o2sondeWert,0,15,' l/min'))w.push(r);
+  // --- ADAC Übergabe-Vitalwerte ---
   if(r=_rangeWarn('GCS (Übergabe)',a.u_gcsSumme,3,15,''))w.push(r);
   if(r=_rangeWarn('AF (Übergabe)',a.u_afWert,0,60,'/min'))w.push(r);
   if(r=_rangeWarn('SpO₂ (Übergabe)',a.u_sao2Wert,50,100,'%'))w.push(r);
   if(r=_rangeWarn('HF (Übergabe)',a.u_hf,20,250,'/min'))w.push(r);
   if(r=_rangeWarn('RR syst. (Übergabe)',a.u_rrSys,30,300,''))w.push(r);
   if(r=_rangeWarn('RR dia. (Übergabe)',a.u_rrDia,20,250,''))w.push(r);
+  if(r=_rangeWarn('NRS (Übergabe)',a.u_nrs,0,10,''))w.push(r);
+  if(r=_rangeWarn('O₂-Sonde (Übergabe)',a.u_o2sondeWert,0,15,' l/min'))w.push(r);
+  // --- ADAC Bilanz ---
   if(r=_rangeWarn('Urin gesamt',a.urinGesamt,0,10000,' ml'))w.push(r);
   if(r=_rangeWarn('Drainagen gesamt',a.drainagenGesamt,0,10000,' ml'))w.push(r);
-  // RR sys > dia
+  // --- Allianz Vitalwerte ---
+  if(r=_rangeWarn('Puls',a.puls,20,250,'/min'))w.push(r);
+  if(r=_rangeWarn('SpO₂',a.spo2,50,100,'%'))w.push(r);
+  if(r=_rangeWarn('AF',a.af,0,60,'/min'))w.push(r);
+  if(r=_rangeWarn('Blutzucker',a.blutzucker,20,1000,' mg/dl'))w.push(r);
+  if(r=_rangeWarn('Temperatur',a.temperatur,20,45,' °C'))w.push(r);
+  if(r=_rangeWarn('GCS',a.gcs,3,15,''))w.push(r);
+  if(r=_rangeWarn('Schmerzstärke (NRS)',a.schmerzenStaerke,0,10,''))w.push(r);
+  if(r=_rangeWarn('Flüssigkeit',a.fluessigkeitMl,0,10000,' ml'))w.push(r);
+  if(r=_rangeWarn('Absaugung',a.absaugungMl,0,10000,' ml'))w.push(r);
+  ['ratingMed','ratingPersonal','ratingPflege'].forEach(k=>{ if(r=_rangeWarn(k,a[k],1,6,''))w.push(r); });
+  // --- RR systolisch > diastolisch (alle Vorkommen) ---
   const pairs=[['RR',a.rrSys,a.rrDia],['RR (Übergabe)',a.u_rrSys,a.u_rrDia]];
   pairs.forEach(([l,s,d])=>{ const ns=_num(s),nd=_num(d); if(ns!=null&&nd!=null&&ns<=nd) w.push({label:l, msg:`${l}: systolisch (${ns}) sollte größer als diastolisch (${nd}) sein.`}); });
-  // Geburtsdatum in Zukunft / sehr alt
-  if(a.geboren){ const d=new Date(a.geboren); if(!isNaN(d.getTime())){ const now=new Date(); if(d>now) w.push({label:'Geboren', msg:'Geburtsdatum liegt in der Zukunft.'}); else { const age=(now-d)/(365.25*864e5); if(age>130) w.push({label:'Geboren', msg:'Geburtsdatum liegt sehr weit in der Vergangenheit (>130 Jahre).'}); } } }
-  // Checkpoints (Transport-Monitoring)
+  // --- Checkpoints (ADAC Transport-Monitoring) ---
   (a.checkpoints||[]).forEach((cp,i)=>{
-    if(r=_rangeWarn('Checkpoint '+(i+1)+' SpO₂',cp.spo2,50,100,'%'))w.push(r);
-    if(r=_rangeWarn('Checkpoint '+(i+1)+' HF',cp.puls,20,250,'/min'))w.push(r);
-    const ns=_num(cp.rrSys),nd=_num(cp.rrDia); if(ns!=null&&nd!=null&&ns<=nd) w.push({label:'Checkpoint '+(i+1), msg:`Checkpoint ${i+1}: RR systolisch (${ns}) sollte größer als diastolisch (${nd}) sein.`});
+    const lbl='Checkpoint '+(i+1);
+    if(r=_rangeWarn(lbl+' SpO₂',cp.spo2,50,100,'%'))w.push(r);
+    if(r=_rangeWarn(lbl+' HF',cp.puls,20,250,'/min'))w.push(r);
+    if(r=_rangeWarn(lbl+' RR syst.',cp.rrSys,30,300,''))w.push(r);
+    if(r=_rangeWarn(lbl+' RR dia.',cp.rrDia,20,250,''))w.push(r);
+    const ns=_num(cp.rrSys),nd=_num(cp.rrDia); if(ns!=null&&nd!=null&&ns<=nd) w.push({label:lbl, msg:`${lbl}: RR systolisch (${ns}) sollte größer als diastolisch (${nd}) sein.`});
+  });
+  // --- Allianz Monitoring-Messwerttabelle ---
+  (a.messwerte||[]).forEach((m,i)=>{
+    const lbl='Messwert '+(i+1);
+    if(r=_rangeWarn(lbl+' Puls',m&&m.puls,20,250,'/min'))w.push(r);
+    if(r=_rangeWarn(lbl+' SpO₂',m&&m.spo2,50,100,'%'))w.push(r);
+    if(r=_rangeWarn(lbl+' O₂',m&&m.o2,0,15,' l/min'))w.push(r);
   });
   return w;
+}
+/* Liefert das HTML für das Plausibilitäts-Hinweis-Banner (nicht blockierend).
+   Wird in der Übersicht jedes Protokolls eingeblendet. */
+function plausiBannerHtml(){
+  const pw=plausibilityWarnings();
+  return pw.length ? `<div class="review-banner" style="background:#fffbeb;border-color:#fde68a;"><div class="rb-icon" style="color:#b45309;">ℹ️</div><div class="rb-text" style="color:#92400e;"><b>${pw.length} Plausibilitäts-Hinweis(e)</b> – bitte kurz prüfen (mögliche Tippfehler).<ul style="margin:6px 0 0 16px;padding:0;">${pw.map(x=>`<li>${escapeHtml(x.msg)}</li>`).join('')}</ul></div></div>` : '';
 }
 /* Datenschutz: Es findet KEINE Speicherung/Übertragung von Patientendaten statt.
    Alle Eingaben bleiben ausschließlich im Arbeitsspeicher dieser Sitzung und werden
@@ -2940,12 +2992,9 @@ let STEPS = [
       const banner = missing.length
         ? `<div class="review-banner"><div class="rb-icon">⚠️</div><div class="rb-text"><b>${missing.length} Pflichtfeld(er) fehlen</b> – sie sind beim jeweiligen Schritt rot markiert. Du kannst das PDF trotzdem erzeugen oder erst ergänzen.</div><button type="button" data-jump="${missing[0].step}">Zum Feld</button></div>`
         : `<div class="review-banner ok"><div class="rb-icon">✓</div><div class="rb-text">Alle Pflichtfelder sind ausgefüllt. Bereit zum Export.</div></div>`;
-      // Plausibilitäts-Soft-Warnungen (Issue 10) – nicht blockierend, nur Hinweise auf mögliche Tippfehler
-      const pw = plausibilityWarnings();
-      const plausiBanner = pw.length ? `<div class="review-banner" style="background:#fffbeb;border-color:#fde68a;"><div class="rb-icon" style="color:#b45309;">ℹ️</div><div class="rb-text" style="color:#92400e;"><b>${pw.length} Plausibilitäts-Hinweis(e)</b> – bitte kurz prüfen (mögliche Tippfehler).<ul style="margin:6px 0 0 16px;padding:0;">${pw.map(x=>`<li>${escapeHtml(x.msg)}</li>`).join('')}</ul></div></div>` : '';
       return `
       ${banner}
-      ${plausiBanner}
+      ${plausiBannerHtml()}
       ${SEC('Patientendaten',1, R('Name, Vorname',answers.name,true)+R('Geboren',answers.geboren,true)+R('Geschlecht',gMap[answers.geschlecht]||'',true)+R('Gewicht',answers.gewicht?answers.gewicht+' kg':'',true)+R('Größe',answers.groesse?answers.groesse+' cm':'',true))}
       ${SEC('Kliniken',3, R('Übernahme von',answers.quellklinik,true)+R('Übergabe an',answers.zielklinik,true))}
       ${SEC('Einsatzdaten',4, R('Mitglieds-Nr.',answers.mitgliedsnr,true)+R('Fallnummer',answers.fallnummer,true)+R('Flugnummer',answers.flug1,true)+R('Flug 2',answers.flug2,false)+R('Flug 3',answers.flug3,false))}
@@ -2965,7 +3014,7 @@ let STEPS = [
     },
     afterRender: (body)=>{
       body.querySelector('#genPdfBtn').addEventListener('click', async ()=>{
-        if(isDemoOnly() && !window._demoFilled){ showToast('Demo-Modus: Bitte erst die 🎲-Taste nutzen, um Demo-Daten zu befüllen. Eigene Daten sind gesperrt.'); return; }
+        if(isDemoOnly() && !window._demoFilled){ showToast('Demo-Modus: Bitte erst die Demo-Taste (✨) nutzen, um Demo-Daten zu befüllen. Eigene Daten sind gesperrt.'); return; }
         const status = body.querySelector('#genStatus');
         const actions = body.querySelector('.final-actions');
         status.textContent = 'PDF wird erstellt…';
@@ -3502,6 +3551,7 @@ const btnBack = document.getElementById('btnBack');
 const btnNext = document.getElementById('btnNext');
 const homeBtn = document.getElementById('homeBtn');
 const demoBtn = document.getElementById('demoBtn');
+{ const verEl=document.querySelector('.ver'); if(verEl) verEl.textContent='v'+APP_VERSION; }
 homeBtn.addEventListener('click', ()=>{
   if(!confirm('Zurück zum Startbildschirm? Nicht gespeicherte Eingaben gehen verloren (sofern kein Entwurf aktiviert ist).')) return;
   flushDraft();
@@ -3528,7 +3578,7 @@ function renderStep(){
   if(isDemoOnly()){
     const banner=document.createElement('div');
     banner.style.cssText='background:#fff8e1;border:1px solid #f0c040;border-radius:8px;padding:10px 12px;margin:0 0 14px;font-size:13px;line-height:1.4;color:#5a4500;';
-    banner.innerHTML='🎲 <b>Demo-Modus</b> – eigene Daten sind mit diesem Code gesperrt. Nutze die 🎲-Taste, um alle Felder zu befüllen und ein PDF zu testen.';
+    banner.innerHTML='✨ <b>Demo-Modus</b> – eigene Daten sind mit diesem Code gesperrt. Nutze die Demo-Taste (✨), um alle Felder zu befüllen und ein PDF zu testen.';
     body.insertBefore(banner, body.firstChild);
     body.querySelectorAll('input[type=text],input[type=number],input[type=date],input[type=tel],input[type=email],textarea').forEach(el=>{ el.readOnly=true; });
     body.querySelectorAll('select,input[type=checkbox],input[type=radio]').forEach(el=>{ el.disabled=true; });
@@ -3649,7 +3699,10 @@ function renderPrivacyGate(){
       <label for="draftCheck"><b>Entwurf lokal speichern (optional):</b> Eingaben bei Unterbrechung
       auf diesem Gerät erhalten. Nach PDF-Export wird der Entwurf automatisch gelöscht.</label>
     </div>
-    <button type="button" id="clearAllDraftsBtn" class="imp-link" style="margin-top:8px;color:#b00020;">Alle gespeicherten Entwürfe löschen</button>
+    <button type="button" id="clearAllDraftsBtn" class="drafts-clear-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      Alle Entwürfe löschen
+    </button>
     <button class="consent-confirm-btn" id="consentConfirmBtn" disabled>Bestätigen und fortfahren</button>
   `;
   const check = document.getElementById('consentCheck');
@@ -4094,6 +4147,7 @@ const STEPS_ALLIANZ = [
         ? `<div class="review-banner"><div class="rb-icon">⚠️</div><div class="rb-text"><b>${missing.length} Pflichtfeld(er) fehlen</b> – du kannst das PDF trotzdem erzeugen oder erst ergänzen.</div></div>`
         : `<div class="review-banner ok"><div class="rb-icon">✓</div><div class="rb-text">Alle Pflichtfelder ausgefüllt. Bereit zum Export.</div></div>`;
       return `${banner}
+        ${plausiBannerHtml()}
         ${SEC('Patient',1, R('Name',answers.name,true)+R('Vorname',answers.vorname,true)+R('Geboren',answers.geboren,true)+R('Aktenzeichen',answers.aktenzeichen,false))}
         ${SEC('Begleitung',2, R('Arzt',answers.arztName,false)+R('Vorname',answers.arztVorname,false)+R('Qualifikation',answers.qualifikation,false))}
         ${SEC('Transport',3, R('Transport am',answers.transportAm,true)+R('Von',answers.vonArt,true)+R('Mittel',answers.transportmittel,true)+R('Art',answers.transportart,true)+R('Klasse',answers.reiseklasse,true)+R('Flug',answers.flug1,true))}
@@ -4168,6 +4222,7 @@ const STEPS_AUFKLAERUNG = [
         ? `<div class="review-banner"><div class="rb-icon">⚠️</div><div class="rb-text"><b>${missing.length} Pflichtfeld(er) fehlen</b></div></div>`
         : `<div class="review-banner ok"><div class="rb-icon">✓</div><div class="rb-text">Alle Pflichtfelder ausgefüllt.</div></div>`;
       return `${banner}
+        ${plausiBannerHtml()}
         <div class="review-section"><div class="review-section-body">
           ${R('Name',answers.name,true)}${R('Geburtsdatum',answers.geboren?answers.geboren:answers.geburtsdatum,true)}${R('Geschlecht',answers.geschlecht,false)}${R('Staatsangehörigkeit',answers.staatsangehoerigkeit,false)}${R('Reisepass',answers.reisepass,false)}
         </div></div>
@@ -4278,7 +4333,7 @@ async function buildPdfAufklaerung(a, ctx){
 
   // Creator stamp
   const now=new Date();
-  const stamp=`Erstellt von ${CREATOR_NAME} – Einsatz-Assistent v4.9 – ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+  const stamp=`Erstellt von ${CREATOR_NAME} – Einsatz-Assistent v${APP_VERSION} – ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
   page.drawText(stamp, { x:26, y:14, size:5.5, font, color:rgb(0.45,0.45,0.45) });
 }
 
@@ -4441,6 +4496,7 @@ const STEPS_FEEDBACK = [
       const SEC=(title,jump,rows)=>`<div class="review-section"><div class="review-section-head"><h4>${title}</h4>${jump!=null?`<button type="button" class="edit-btn" data-jump="${jump}">bearbeiten</button>`:''}</div><div class="review-section-body">${rows}</div></div>`;
       const YN=(label,key)=>R(label, answers[key]==='ja'?'Ja':(answers[key]==='nein'?'Nein':'–'));
       return `<div class="review-banner ok"><div class="rb-icon">✓</div><div class="rb-text">Bereit zum Export – alle Felder optional.</div></div>
+        ${plausiBannerHtml()}
         ${SEC('Stammdaten',1, R('Fallnummer',answers.fallnummer)+R('Abreise',answers.abreise)+R('Escort-Name',answers.escortName)+R('Rückreise',answers.rueckreise))}
         ${SEC('Transportorganisation',2, YN('Unterlagen am Vortag','to1')+YN('Rücksprache Arzt','to2')+YN('Med. Status','to3')+YN('Infos vor Ort','to4')+YN('Tickets','to5')+YN('Flugplanung','to6')+R('Bemerkungen',answers.bemTO))}
         ${SEC('Med. Status / Transport',3, YN('Antransport pünktl.','m1')+YN('Antransportmittel','m2')+YN('Patientenvisite','m3')+YN('Zustand entspr. Status','m4')+YN('Transportmittel adäquat','m5')+R('Adäquater gewesen',answers.adequater)+R('Bemerkung',answers.bemM1)+R('Bemerkung',answers.bemM2))}
@@ -4597,7 +4653,7 @@ function fillDemo(){
   saveDraft();
   window._demoFilled=true;
   renderStep();
-  showToast('🎲 Demo-Daten gefüllt – alle Felder belegt. Jetzt PDF erzeugen und prüfen.');
+  showToast('✨ Demo-Daten gefüllt – alle Felder belegt. Jetzt PDF erzeugen und prüfen.');
 }
 function renderDocSelector(){
   window._demoFilled=false;
@@ -4646,7 +4702,7 @@ function setActiveDoc(id){
 /* Gemeinsamer PDF-Button-Handler für Review-Schritte (Allianz/Aufklärung) */
 function wirePdfButton(body){
   body.querySelector('#genPdfBtn').addEventListener('click', async ()=>{
-    if(isDemoOnly() && !window._demoFilled){ showToast('Demo-Modus: Bitte erst die 🎲-Taste nutzen, um Demo-Daten zu befüllen. Eigene Daten sind gesperrt.'); return; }
+    if(isDemoOnly() && !window._demoFilled){ showToast('Demo-Modus: Bitte erst die Demo-Taste (✨) nutzen, um Demo-Daten zu befüllen. Eigene Daten sind gesperrt.'); return; }
     const status = body.querySelector('#genStatus');
     const actions = body.querySelector('.final-actions');
     status.textContent = 'PDF wird erstellt…';
@@ -4766,8 +4822,28 @@ async function renderPdfPreview(container, bytes){
       wrap.appendChild(canvas);
     }
     container.scrollIntoView({behavior:'smooth', block:'start'});
-  }catch(e){
-    container.innerHTML='<div class="pv-loading">Vorschau nicht verfügbar – das PDF wurde trotzdem erzeugt.</div>';
+    return;
+  }catch(e){ /* Fallback unten */ }
+  // Fallback: nativer PDF-Viewer, falls pdf.js das PDF nicht als Canvas rendern kann
+  // (z.B. bestimmte Vorlagen auf Safari/iOS). iframe (Desktop) + Tab-Öffnen (iOS).
+  try{
+    const blobUrl = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
+    container.innerHTML='';
+    const head=document.createElement('div'); head.className='pv-head';
+    head.innerHTML='<span>📄 PDF-Vorschau</span><span class="pv-pages">Native Vorschau · vor dem Speichern prüfen</span>';
+    container.appendChild(head);
+    const iframe=document.createElement('iframe');
+    iframe.src=blobUrl; iframe.title='PDF-Vorschau';
+    iframe.style.cssText='width:100%;height:72vh;border:1px solid #d8d8e0;border-radius:8px;background:#fff;';
+    container.appendChild(iframe);
+    const openLink=document.createElement('a');
+    openLink.href=blobUrl; openLink.target='_blank'; openLink.rel='noopener';
+    openLink.className='dl-btn'; openLink.style.cssText='display:inline-block;margin-top:10px;text-align:center;';
+    openLink.textContent='🗂️ Vorschau in neuem Tab öffnen';
+    container.appendChild(openLink);
+    container.scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(e2){
+    container.innerHTML='<div class="pv-loading">Vorschau nicht verfügbar – das PDF wurde trotzdem erzeugt. Bitte „PDF herunterladen" verwenden.</div>';
   }
 }
 function setAns(path, val){
