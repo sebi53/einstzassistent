@@ -399,7 +399,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.7.1';
+const APP_VERSION='6.8.0';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4625,7 +4625,7 @@ const MAP_MFS = {
     mfs_valuables:{x:117.6, topY:657.8, size:6, maxWidth:110, maxLines:4, lineH:9.6},
   },
   // Body diagram area on page 1 (Section E crop)
-  bodyDiagram:{x:400.2, topY:555.0, w:139.2, h:70.6},
+  bodyDiagram:{x:375.6, topY:657.2, w:203.8, h:169.6},
 };
 
 async function buildPdfMFS(a, ctx){
@@ -4746,10 +4746,11 @@ async function buildPdfMFS(a, ctx){
         const sigBytes = dataUrlToBytes(a[key]);
         const sigImg = await ctx.pdfDoc.embedPng(sigBytes);
         const isEscort = key==='mfs_sigEscort';
-        const sx = isEscort ? 119.5 : 164.6;
-        const sy = PAGE_H - 716.5;
-        const sw = 120, sh = sigImg.height / sigImg.width * sw;
-        page.drawImage(sigImg, {x:sx, y:sy-sh+5, width:sw, height:sh});
+        const sx = isEscort ? 296.6 : 409.7;
+        const sy = PAGE_H - 811.9;
+        const sw = isEscort ? 90 : 145;
+        const sh = 22;
+        page.drawImage(sigImg, {x:sx, y:sy-sh+3, width:sw, height:sh});
       }catch(e){}
     }
   }
