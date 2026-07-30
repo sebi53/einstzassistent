@@ -4635,7 +4635,7 @@ const MAP_MFS = {
     // Column x-positions: 4 columns starting at x=105, spaced 120pt apart
     mfs_vitalsGrid:{
       rows:{temp:132, spo2:148, resp:164, o2:180, bz:196, gcs:212, pain:228},
-      cols:[105, 225, 345, 465], // x-positions for 4 time columns
+      cols:[105, 135, 165, 195, 225, 255, 285, 315, 345, 375, 405, 435, 465, 495, 525, 555], // up to 16 columns, 30pt spacing
       timeRowY:116, // y-position for time labels
       size:5.5,
     },
@@ -4729,21 +4729,20 @@ async function buildPdfMFS(a, ctx){
   wrapText(p0, a.mfs_ameScore, M.p0.mfs_ameScore);
   if(a.mfs_fitToFly && M.p0.mfs_fitToFly[a.mfs_fitToFly]) mark(p0, M.p0.mfs_fitToFly[a.mfs_fitToFly]);
 
-  // Vitals grid (time-based values on page 2)
+  // Vitals grid (dynamic measurements on page 2)
   const vg = M.p1.mfs_vitalsGrid;
   if(vg){
-    // Time labels
-    for(let c=0;c<4;c++){
-      const tv = a['mfs_vt'+(c+1)];
-      if(tv){ ctx.txt(p2, tv, {x:vg.cols[c]-5, topY:vg.timeRowY, size:5, maxWidth:50, maxLines:1}); }
-    }
-    // Values
-    for(const [rowKey, y] of Object.entries(vg.rows)){
-      for(let c=0;c<4;c++){
-        const val = a['mfs_v_'+rowKey+'_'+(c+1)];
-        if(val){ ctx.txt(p2, val, {x:vg.cols[c]-5, topY:y, size:vg.size, maxWidth:45, maxLines:1}); }
+    let measurements = [];
+    try { measurements = JSON.parse(a.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
+    measurements.forEach((m, i) => {
+      const colX = vg.cols[Math.min(i, vg.cols.length-1)];
+      // Time label
+      if(m.time){ ctx.txt(p1, m.time, {x:colX-8, topY:vg.timeRowY, size:4.5, maxWidth:45, maxLines:1}); }
+      // Values
+      for(const [key, y] of Object.entries(vg.rows)){
+        if(m[key]){ ctx.txt(p1, m[key], {x:colX-5, topY:y, size:vg.size, maxWidth:40, maxLines:1}); }
       }
-    }
+    });
   }
 
   // Body diagram: draw X marks
@@ -4991,42 +4990,73 @@ const STEPS_MFS = [
     },
   },
   // 8 – Vitals & Trends (Page 2)
-  { title:'Vitalwerte', subtitle:'Einmalwerte und Verlauf im Raster (Seite 2).',
+  { title:'Vitalwerte', subtitle:'Einmalwerte und Verlaufsmessungen (Seite 2).',
     body: ()=> {
       const singleRow = `<div class="row2">` + fieldWrap('Größe (cm)', textInput('mfs_size',{type:'number'})) + fieldWrap('Gewicht (kg)', textInput('mfs_weight',{type:'number'})) + `</div>`;
-      const vitalsRows = [
-        ['Temp °C','temp'],
-        ['SpO₂ %','spo2'],
-        ['Resp./min','resp'],
-        ['O₂ l/min','o2'],
-        ['BZ mg/dl','bz'],
-        ['GCS','gcs'],
-        ['Pain /10','pain'],
-      ];
-      const cols = [1,2,3,4];
-      const thead = `<thead><tr><th>Vital</th>` + cols.map(c=>`<th><input type="time" class="time-input" data-vitals-time="${c}" value="${answers['mfs_vt'+c]||''}"></th>`).join('') + `</tr></thead>`;
-      const tbody = `<tbody>` + vitalsRows.map(([label,key])=>{
-        return `<tr><td>${label}</td>` + cols.map(c=>{
-          const v = answers['mfs_v_'+key+'_'+c]||'';
-          return `<td><input type="text" inputmode="decimal" data-vitals="${key}" data-col="${c}" value="${escapeHtml(v)}"></td>`;
-        }).join('') + `</tr>`;
-      }).join('') + `</tbody>`;
-      const grid = `<table class="vitals-grid">${thead}${tbody}</table>`;
+      // Dynamic vitals measurements
+      let measurements = [];
+      try { measurements = JSON.parse(answers.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
+      if(measurements.length === 0) measurements = [{time:'',temp:'',spo2:'',resp:'',o2:'',bz:'',gcs:'',pain:''}];
+      const fields = [['time','Zeit (UTC)','time'],['temp','Temp °C','text'],['spo2','SpO₂','number'],['resp','Resp/min','number'],['o2','O₂ l/min','number'],['bz','BZ mg/dl','text'],['gcs','GCS','number'],['pain','Pain /10','number']];
+      const renderRow = (m,i) => `<tr class="vit-row" data-idx="${i}">` +
+        fields.map(([key,label,type])=>{
+          if(key==='time') return `<td><input type="time" data-vf="time" data-idx="${i}" value="${escapeHtml(m.time||'')}" style="max-width:70px"></td>`;
+          return `<td><input type="text" inputmode="${type==='number'?'decimal':'text'}" data-vf="${key}" data-idx="${i}" value="${escapeHtml(m[key]||'')}" placeholder="–"></td>`;
+        }).join('') +
+        `<td><button type="button" class="vit-del" data-idx="${i}" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer;padding:0 4px;">×</button></td></tr>`;
+      const thead = `<thead><tr>` + fields.map(([k,l])=>`<th>${l}</th>`).join('') + `<th></th></tr></thead>`;
+      const tbody = `<tbody id="vitBody">` + measurements.map(renderRow).join('') + `</tbody>`;
+      const grid = `<table class="vitals-grid" id="vitTable">${thead}${tbody}</table>` +
+        `<button type="button" id="addVitBtn" style="margin:6px 0;padding:6px 14px;font-size:13px;border:1.5px solid var(--accent);background:var(--accent-soft,#eef2ff);color:var(--accent);border-radius:8px;cursor:pointer;">+ weitere Messung</button>`;
       const balance = `<div class="row2">` + fieldWrap('Intake', textInput('mfs_intake')) + fieldWrap('Output', textInput('mfs_output')) + `</div>` +
         fieldWrap('Balance', textInput('mfs_balance'));
-      return singleRow + `<p style="font-size:13px;color:var(--muted);margin:8px 0 4px;">Verlaufsmessungen (X=Übernahme, D=Abflug, #=Vorfall, L=Ankunft):</p>` + grid + balance;
+      return singleRow + `<p style="font-size:13px;color:var(--muted);margin:8px 0 4px;">Verlaufsmessungen (Anzahl frei wählbar, Werte werden ins Raster auf Seite 2 eingetragen):</p>` + grid + balance;
     },
     afterRender: (body)=>{
-      // Wire time inputs
-      body.querySelectorAll('[data-vitals-time]').forEach(inp=>{
-        inp.addEventListener('input', ()=>{ answers['mfs_vt'+inp.dataset.vitalsTime] = inp.value; });
+      const saveVitals = ()=>{
+        const rows = body.querySelectorAll('.vit-row');
+        const data = [];
+        rows.forEach(r=>{
+          const idx = r.dataset.idx;
+          const entry = {};
+          body.querySelectorAll(`[data-idx="${idx}"]`).forEach(inp=>{
+            entry[inp.dataset.vf] = inp.value;
+          });
+          // Only save if any field has a value
+          if(Object.values(entry).some(v=>v)) data.push(entry);
+        });
+        answers.mfs_vitalsData = JSON.stringify(data);
+      };
+      body.querySelectorAll('[data-vf]').forEach(inp=>{
+        inp.addEventListener('input', saveVitals);
       });
-      // Wire value inputs
-      body.querySelectorAll('[data-vitals]').forEach(inp=>{
-        inp.addEventListener('input', ()=>{
-          answers['mfs_v_'+inp.dataset.vitals+'_'+inp.dataset.col] = inp.value;
+      body.querySelectorAll('.vit-del').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const rows = body.querySelectorAll('.vit-row');
+          if(rows.length > 1){ btn.closest('.vit-row').remove(); saveVitals(); }
         });
       });
+      const addBtn = body.querySelector('#addVitBtn');
+      if(addBtn){
+        addBtn.addEventListener('click', ()=>{
+          const tbody = body.querySelector('#vitBody');
+          const idx = tbody.children.length;
+          const empty = {time:'',temp:'',spo2:'',resp:'',o2:'',bz:'',gcs:'',pain:''};
+          const fields = [['time','Zeit (UTC)','time'],['temp','Temp °C','text'],['spo2','SpO₂','number'],['resp','Resp/min','number'],['o2','O₂ l/min','number'],['bz','BZ mg/dl','text'],['gcs','GCS','number'],['pain','Pain /10','number']];
+          const tr = document.createElement('tr');
+          tr.className = 'vit-row';
+          tr.dataset.idx = idx;
+          tr.innerHTML = fields.map(([key,label,type])=>{
+            if(key==='time') return `<td><input type="time" data-vf="time" data-idx="${idx}" value="" style="max-width:70px"></td>`;
+            return `<td><input type="text" inputmode="${type==='number'?'decimal':'text'}" data-vf="${key}" data-idx="${idx}" value="" placeholder="–"></td>`;
+          }).join('') + `<td><button type="button" class="vit-del" data-idx="${idx}" style="background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer;padding:0 4px;">×</button></td>`;
+          tbody.appendChild(tr);
+          tr.querySelectorAll('[data-vf]').forEach(inp=> inp.addEventListener('input', saveVitals));
+          tr.querySelector('.vit-del').addEventListener('click', ()=>{
+            if(body.querySelectorAll('.vit-row').length > 1){ tr.remove(); saveVitals(); }
+          });
+        });
+      }
     },
   },
   // 9 – Observations & Handover
@@ -5048,14 +5078,9 @@ const STEPS_MFS = [
         SEC('Transport & Einsatz',2, R('Flugnummer',answers.mfs_flightno)+R('Transportart', [answers.mfs_walk&&'walk',answers.mfs_wheelchair&&'wheelchair',answers.mfs_extraseat&&'extraseat',answers.mfs_ec&&'EC',answers.mfs_bc&&'BC',answers.mfs_fc&&'FC',answers.mfs_stretcher&&'stretcher',answers.mfs_ptc&&'PTC'].filter(Boolean).join(', ')||'–')+R('NACA',answers.mfs_naca)+R('AME Score',answers.mfs_ameScore)+R('Fit-to-fly',answers.mfs_fitToFly==='ja'?'Yes':(answers.mfs_fitToFly==='nein'?'No':'–'))) +
         SEC('Wichtige Infos',6, YN('Allergies','mfs_allergies')+YN('Intolerances','mfs_intolerances')+YN('Fear of flying','mfs_fearFlying')+YN('Pre-existing','mfs_preExisting')) +
         SEC('Vitalwerte (Verlauf)',8, (()=>{
-          const cols=[1,2,3,4];
-          const rows=[['Temp','temp'],['SpO₂','spo2'],['Resp','resp'],['O₂','o2'],['BZ','bz'],['GCS','gcs'],['Pain','pain']];
-          let html='';
-          for(const [label,key] of rows){
-            const vals=cols.map(c=>answers['mfs_v_'+key+'_'+c]||'').filter(Boolean);
-            if(vals.length) html+=R(label, vals.join(' / '));
-          }
-          return html||R('Verlauf','–');
+          let ms=[]; try{ ms=JSON.parse(answers.mfs_vitalsData||'[]'); }catch(e){}
+          if(!ms.length) return R('Verlauf','–');
+          return R('Messungen', ms.length+' Einträge') + ms.map((m,i)=>R('  '+((m.time)||'#'+(i+1)), [m.temp,m.spo2,m.resp,m.o2,m.bz,m.gcs,m.pain].filter(Boolean).join(' / '))).join('');
         })()) +
         SEC('Körperdiagramm',7, R('Kreuze gesetzt', (()=>{ try{return JSON.parse(answers.mfs_bodyMarks||'[]').length}catch(e){return 0} })() )) +
         sigPad('mfs_sigEscort','Unterschrift Medical Escort') +
