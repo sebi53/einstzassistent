@@ -215,6 +215,8 @@
   .sig-canvas-wrap{border:1.5px solid var(--line); border-radius:var(--radius-sm); background:#fff; overflow:hidden; box-shadow:inset 0 1px 2px rgba(15,23,42,.03);}
   canvas.sigpad{width:100%; height:150px; display:block; touch-action:none;}
   .sig-clear{margin-top:8px; font-size:12.5px; color:var(--navy); background:none; border:none; cursor:pointer; font-weight:700; padding:0;}
+  .sig-block{margin-bottom:16px;}
+  canvas.sig-canvas{width:100%; height:150px; display:block; touch-action:none; border:1.5px solid var(--line); border-radius:var(--radius-sm); background:#fff; box-shadow:inset 0 1px 2px rgba(15,23,42,.03);}
   .summary-block{margin-bottom:16px;}
   .summary-block h4{font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin:0 0 8px; font-weight:800;}
   .summary-row{display:flex; justify-content:space-between; font-size:13.5px; padding:7px 0; border-bottom:1px solid var(--line-2);}
@@ -399,7 +401,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.9.0';
+const APP_VERSION='6.9.1';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4528,46 +4530,46 @@ const REQUIRED_MFS = {
 const MAP_MFS = {
   p0:{
     // Patient info (page 1, top-left) — precise 300 DPI crop measurements
-    mfs_name:{x:92.2, topY:79.0, size:7, maxWidth:400, maxLines:1},
-    mfs_address:{x:92.2, topY:103.0, size:7, maxWidth:400, maxLines:1},
-    mfs_country:{x:92.2, topY:107.0, size:7, maxWidth:400, maxLines:1},
-    mfs_dob:{x:92.2, topY:92.0, size:6, maxWidth:100, maxLines:1},
-    mfs_age:{x:240.5, topY:92.0, size:6, maxWidth:50, maxLines:1},
+    mfs_name:{x:92.2, topY:85, size:7, maxWidth:400, maxLines:1},
+    mfs_address:{x:92.2, topY:120, size:7, maxWidth:400, maxLines:1},
+    mfs_country:{x:92.2, topY:133, size:7, maxWidth:400, maxLines:1},
+    mfs_dob:{x:92.2, topY:108, size:6, maxWidth:100, maxLines:1},
+    mfs_age:{x:240.5, topY:108, size:6, maxWidth:50, maxLines:1},
     mfs_sex:{m:{x:288.4,topY:65.0,r:2.0}, f:{x:306.4,topY:65.0,r:2.0}},
-    mfs_flightno:{x:106.2, topY:131.0, size:6, maxWidth:85, maxLines:1},
+    mfs_flightno:{x:106.2, topY:175, size:6, maxWidth:85, maxLines:1},
     // Mode of transport checkboxes
-    mfs_walk:{ja:{x:69.1,topY:120.0,r:2.0}},
-    mfs_wheelchair:{ja:{x:122.4,topY:120.0,r:2.0}},
-    mfs_extraseat:{ja:{x:166.7,topY:120.0,r:2.0}},
-    mfs_ec:{ja:{x:200.9,topY:120.0,r:2.0}},
-    mfs_bc:{ja:{x:221.4,topY:120.0,r:2.0}},
-    mfs_fc:{ja:{x:241.2,topY:120.0,r:2.0}},
-    mfs_stretcher:{ja:{x:261.0,topY:120.0,r:2.0}},
-    mfs_ptc:{ja:{x:295.2,topY:120.0,r:2.0}},
+    mfs_walk:{ja:{x:69.1,topY:150,r:2.0}},
+    mfs_wheelchair:{ja:{x:122.4,topY:150,r:2.0}},
+    mfs_extraseat:{ja:{x:166.7,topY:150,r:2.0}},
+    mfs_ec:{ja:{x:200.9,topY:150,r:2.0}},
+    mfs_bc:{ja:{x:221.4,topY:150,r:2.0}},
+    mfs_fc:{ja:{x:241.2,topY:150,r:2.0}},
+    mfs_stretcher:{ja:{x:261.0,topY:150,r:2.0}},
+    mfs_ptc:{ja:{x:295.2,topY:150,r:2.0}},
     // Ref-No (right column)
-    mfs_refno:{x:404.6, topY:54.5, size:5, maxWidth:120, maxLines:1},
+    mfs_refno:{x:404.6, topY:64, size:5, maxWidth:120, maxLines:1},
     // Mission timestamps (right column) — line spacing ~14.5pt
-    mfs_missionStart:{x:486.0, topY:64.0, size:6, maxWidth:80, maxLines:1},
-    mfs_arrivalPatient:{x:486.0, topY:79.0, size:6, maxWidth:80, maxLines:1},
-    mfs_toAirport:{x:486.0, topY:92.0, size:6, maxWidth:80, maxLines:1},
-    mfs_atDestin:{x:486.0, topY:103.0, size:6, maxWidth:80, maxLines:1},
-    mfs_endMission:{x:486.0, topY:120.0, size:6, maxWidth:80, maxLines:1},
+    mfs_missionStart:{x:486.0, topY:77, size:6, maxWidth:80, maxLines:1},
+    mfs_arrivalPatient:{x:486.0, topY:92, size:6, maxWidth:80, maxLines:1},
+    mfs_toAirport:{x:486.0, topY:105, size:6, maxWidth:80, maxLines:1},
+    mfs_atDestin:{x:486.0, topY:118, size:6, maxWidth:80, maxLines:1},
+    mfs_endMission:{x:486.0, topY:134, size:6, maxWidth:80, maxLines:1},
     // Medical team
-    mfs_nurseName:{x:334.1, topY:120.0, size:6, maxWidth:180, maxLines:1},
-    mfs_nurseReg:{x:527.0, topY:120.0, size:5, maxWidth:60, maxLines:1},
-    mfs_doctorName:{x:334.1, topY:131.0, size:6, maxWidth:180, maxLines:1},
-    mfs_doctorReg:{x:527.0, topY:131.0, size:5, maxWidth:60, maxLines:1},
+    mfs_nurseName:{x:334.1, topY:155, size:6, maxWidth:180, maxLines:1},
+    mfs_nurseReg:{x:527.0, topY:155, size:5, maxWidth:60, maxLines:1},
+    mfs_doctorName:{x:334.1, topY:175, size:6, maxWidth:180, maxLines:1},
+    mfs_doctorReg:{x:527.0, topY:175, size:5, maxWidth:60, maxLines:1},
     // Transfer
-    mfs_takeoverFrom:{x:232.6, topY:159.0, size:6, maxWidth:330, maxLines:1},
-    mfs_handoverTo:{x:232.6, topY:177.8, size:6, maxWidth:330, maxLines:1},
+    mfs_takeoverFrom:{x:232.6, topY:205, size:6, maxWidth:330, maxLines:1},
+    mfs_handoverTo:{x:232.6, topY:245, size:6, maxWidth:330, maxLines:1},
     // Clinical narrative (left column)
-    mfs_chiefComplaint:{x:13.0, topY:203.5, size:6, maxWidth:390, maxLines:5, lineH:11.5},
-    mfs_situationTakeover:{x:13.0, topY:292.8, size:6, maxWidth:390, maxLines:13, lineH:11.5},
-    mfs_interventionsInflight:{x:13.0, topY:465.4, size:6, maxWidth:390, maxLines:14, lineH:11.5},
-    mfs_woundsDrains:{x:13.0, topY:637.7, size:6, maxWidth:325, maxLines:17, lineH:9.6},
+    mfs_chiefComplaint:{x:13.0, topY:280, size:6, maxWidth:390, maxLines:5, lineH:11.5},
+    mfs_situationTakeover:{x:13.0, topY:309, size:6, maxWidth:390, maxLines:13, lineH:11.5},
+    mfs_interventionsInflight:{x:13.0, topY:465, size:6, maxWidth:390, maxLines:14, lineH:11.5},
+    mfs_woundsDrains:{x:13.0, topY:653, size:6, maxWidth:325, maxLines:17, lineH:9.6},
     // Right column: date + diagnosis
-    mfs_dateIncident:{x:502.6, topY:184.7, size:6, maxWidth:80, maxLines:1},
-    mfs_diagnosis:{x:424.1, topY:203.5, size:6, maxWidth:150, maxLines:6, lineH:11.5},
+    mfs_dateIncident:{x:502.6, topY:265, size:6, maxWidth:80, maxLines:1},
+    mfs_diagnosis:{x:424.1, topY:300, size:6, maxWidth:150, maxLines:6, lineH:11.5},
     // Medical interventions table (Section D crop, 300 DPI)
     mfs_monExisting:{ja:{x:435.6,topY:301.0,r:2.0}}, mfs_monNew:{ja:{x:575.3,topY:301.0,r:2.0}},
     mfs_o2Existing:{ja:{x:435.6,topY:306.3,r:2.0}}, mfs_o2New:{ja:{x:575.3,topY:306.3,r:2.0}},
@@ -4605,15 +4607,15 @@ const MAP_MFS = {
   },
   p1:{
     // Page 2: size & weight (remeasured at 300 DPI, full page crop y=0-500)
-    mfs_size:{x:4.7, topY:135.0, size:6, maxWidth:50, maxLines:1},
-    mfs_weight:{x:4.7, topY:162.0, size:6, maxWidth:50, maxLines:1},
+    mfs_size:{x:4.7, topY:137, size:6, maxWidth:50, maxLines:1},
+    mfs_weight:{x:4.7, topY:157, size:6, maxWidth:50, maxLines:1},
     // Clinical data (first grid data column at X=145px = 34.8pt)
-    mfs_spo2:{x:34.8, topY:168.0, size:6, maxWidth:50, maxLines:1},
-    mfs_respRate:{x:34.8, topY:176.0, size:6, maxWidth:50, maxLines:1},
-    mfs_o2lmin:{x:34.8, topY:182.0, size:6, maxWidth:50, maxLines:1},
-    mfs_bloodglucose:{x:34.8, topY:189.0, size:6, maxWidth:80, maxLines:1},
-    mfs_gcs:{x:34.8, topY:195.0, size:6, maxWidth:30, maxLines:1},
-    mfs_painScale:{x:34.8, topY:202.0, size:6, maxWidth:40, maxLines:1},
+    mfs_spo2:{x:34.8, topY:163, size:6, maxWidth:50, maxLines:1},
+    mfs_respRate:{x:34.8, topY:170, size:6, maxWidth:50, maxLines:1},
+    mfs_o2lmin:{x:34.8, topY:177, size:6, maxWidth:50, maxLines:1},
+    mfs_bloodglucose:{x:34.8, topY:183, size:6, maxWidth:80, maxLines:1},
+    mfs_gcs:{x:34.8, topY:190, size:6, maxWidth:30, maxLines:1},
+    mfs_painScale:{x:34.8, topY:197, size:6, maxWidth:40, maxLines:1},
     // Fluid balance (bottom of grid, crop y=500+ at 300 DPI)
     mfs_intake:{x:34.8, topY:525.7, size:6, maxWidth:80, maxLines:1},
     mfs_output:{x:34.8, topY:534.6, size:6, maxWidth:80, maxLines:1},
@@ -4623,6 +4625,9 @@ const MAP_MFS = {
     mfs_conditionHandover:{x:117.6, topY:593.0, size:6, maxWidth:110, maxLines:6, lineH:9.6},
     mfs_handoverTime:{x:194.9, topY:641.0, size:6, maxWidth:50, maxLines:1},
     mfs_valuables:{x:117.6, topY:657.8, size:6, maxWidth:110, maxLines:4, lineH:9.6},
+    // Signature specs (gleiche Struktur wie ADAC/Allianz)
+    sigEscort:{x:30, topY:818, w:200, h:30},
+    sigRecipient:{x:300, topY:818, w:230, h:30},
   },
   // Body diagram area on page 1 (Section E crop)
   bodyDiagram:{x:375.6, topY:657.2, w:203.8, h:169.6},
@@ -4739,21 +4744,19 @@ async function buildPdfMFS(a, ctx){
   wrapText(p1, a.mfs_handoverTime, M.p1.mfs_handoverTime);
   wrapText(p1, a.mfs_valuables, M.p1.mfs_valuables);
 
-  // Signatures (embed as images if present)
-  for(const [key, page] of [['mfs_sigEscort', p1], ['mfs_sigRecipient', p1]]){
-    if(a[key] && a[key].startsWith('data:image/png')){
-      try{
-        const sigBytes = dataUrlToBytes(a[key]);
-        const sigImg = await ctx.pdfDoc.embedPng(sigBytes);
-        const isEscort = key==='mfs_sigEscort';
-        const sx = isEscort ? 296.6 : 409.7;
-        const sy = PAGE_H - 821.0;
-        const sw = isEscort ? 90 : 145;
-        const sh = 22;
-        page.drawImage(sigImg, {x:sx, y:sy-sh/2, width:sw, height:sh});
-      }catch(e){}
-    }
-  }
+  // Signatures – gleiche Methode wie ADAC/Allianz (drawSig mit Aspect-Ratio-Erhalt)
+  const drawSigMFS = async (dataUrl, s) => {
+    if(!dataUrl || !dataUrl.startsWith('data:image/png')) return;
+    try{
+      const img = await ctx.pdfDoc.embedPng(dataUrl);
+      const iw = img.width, ih = img.height;
+      let dw = s.w, dh = dw * ih / iw;
+      if(dh > s.h){ dh = s.h; dw = dh * iw / ih; }
+      p1.drawImage(img, { x: s.x + (s.w - dw)/2, y: PAGE_H - s.topY + 1, width: dw, height: dh });
+    }catch(e){}
+  };
+  await drawSigMFS(a.mfs_sigEscort, M.p1.sigEscort);
+  await drawSigMFS(a.mfs_sigRecipient, M.p1.sigRecipient);
 }
 
 const STEPS_FEEDBACK = [
