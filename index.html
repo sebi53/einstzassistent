@@ -399,7 +399,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.8.0';
+const APP_VERSION='6.8.1';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4365,7 +4365,7 @@ async function buildPdfAufklaerung(a, ctx){
    DOKUMENT-REGISTRIE & START-SELEKTOR
    ============================================================ */
 const DOC_ADAC = {
-  id:'adac', short:'ADAC', icon:'🚁', color:'#1f3877',
+  id:'adac', short:'ADAC', icon:'🚁', color:'#b45309', colorDeep:'#78350f', colorSoft:'#fef3c7',
   title:'ADAC Einsatzprotokoll',
   desc:'Einsatzprotokoll Linienflug – 36 Schritte, 2 Seiten.',
   steps: STEPS, map: MAP, templateB64: TEMPLATE_B64, required: REQUIRED,
@@ -4373,7 +4373,7 @@ const DOC_ADAC = {
   filename:(a)=>'Einsatzprotokoll_' + (a.name||'Patient').replace(/[^a-z0-9]+/gi,'_') + '.pdf',
 };
 const DOC_ALLIANZ = {
-  id:'allianz', short:'Allianz', icon:'✈️', color:'#003781',
+  id:'allianz', short:'Allianz', icon:'✈️', color:'#003781', colorDeep:'#001d47', colorSoft:'#e7edf7',
   title:'Allianz Medical Report',
   desc:'Medizinischer Begleitbericht – 2 Seiten, Allianz-Vorlage.',
   steps: STEPS_ALLIANZ, map: MAP_ALLIANZ, templateB64: TEMPLATE_ALLIANZ_B64, required: REQUIRED_ALLIANZ,
@@ -5016,7 +5016,7 @@ const DOC_FEEDBACK = {
 
 
 const DOC_MFS = {
-  id:'mfs', short:'MFS', icon:'✈️', color:'#0891b2',
+  id:'mfs', short:'MFS', icon:'✈️', color:'#b91c1c', colorDeep:'#7f1d1d', colorSoft:'#fee2e2',
   title:'Transportprotokoll MFS',
   desc:'Patient Care Report (EAAME) – 2 Seiten, mit Körperdiagramm.',
   steps: STEPS_MFS, map: MAP_MFS, templateB64: TEMPLATE_MFS_B64, required: REQUIRED_MFS,
@@ -5190,6 +5190,29 @@ function renderDocSelector(){
   window.scrollTo(0,0);
 }
 
+function hexToRgb(hex){
+  const h = hex.replace('#','');
+  const bigint = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  return { r:(bigint>>16)&255, g:(bigint>>8)&255, b:bigint&255 };
+}
+function mixWithWhite(hex, amount){
+  const {r,g,b} = hexToRgb(hex);
+  const mr = Math.round(r + (255-r)*amount);
+  const mg = Math.round(g + (255-g)*amount);
+  const mb = Math.round(b + (255-b)*amount);
+  return `rgb(${mr},${mg},${mb})`;
+}
+function applyDocTheme(doc){
+  const accent = (doc && doc.color) || '#1f3877';
+  const deep = (doc && doc.colorDeep) || '#15294d';
+  const soft = (doc && doc.colorSoft) || mixWithWhite(accent, 0.92);
+  const root = document.documentElement.style;
+  root.setProperty('--accent', accent);
+  root.setProperty('--accent-soft', soft);
+  root.setProperty('--navy', accent);
+  root.setProperty('--navy-deep', deep);
+  root.setProperty('--navy-soft', soft);
+}
 function setActiveDoc(id){
   flushDraft();
   const doc = DOCS.find(d=>d.id===id);
@@ -5201,7 +5224,7 @@ function setActiveDoc(id){
   TEMPLATE_B64 = doc.templateB64;
   answers = doc.blank();
   stepIndex = 0;
-  document.documentElement.style.setProperty('--accent', doc.color || '#1f3877');
+  applyDocTheme(doc);
   renderPrivacyGate();
 }
 
