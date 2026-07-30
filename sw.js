@@ -1,6 +1,6 @@
 // Einsatz-Assistent – Service Worker (Offline-Cache)
-const CACHE = 'einsatz-assistent-v64';
-const APP_VERSION='7.0.0';
+const CACHE = 'einsatz-assistent-v65';
+const APP_VERSION='7.1.0';
 const ASSETS = [
   './',
   './index.html',

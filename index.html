@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.0.0';
+const APP_VERSION='7.1.0';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4620,15 +4620,15 @@ const MAP_MFS = {
   },
   p1:{
     // Page 2: size & weight (remeasured at 300 DPI, full page crop y=0-500)
-    mfs_size:{x:4.7, topY:138, size:6, maxWidth:50, maxLines:1},
-    mfs_weight:{x:4.7, topY:158, size:6, maxWidth:50, maxLines:1},
+    mfs_size:{x:35.0, topY:132, size:6, maxWidth:50, maxLines:1},
+    mfs_weight:{x:35.0, topY:148, size:6, maxWidth:50, maxLines:1},
     // Clinical data (single values, left column)
-    mfs_spo2:{x:100.0, topY:149, size:5.5, maxWidth:50, maxLines:1},
-    mfs_respRate:{x:100.0, topY:165, size:5.5, maxWidth:50, maxLines:1},
-    mfs_o2lmin:{x:100.0, topY:181, size:5.5, maxWidth:50, maxLines:1},
-    mfs_bloodglucose:{x:100.0, topY:197, size:5.5, maxWidth:80, maxLines:1},
-    mfs_gcs:{x:100.0, topY:213, size:5.5, maxWidth:30, maxLines:1},
-    mfs_painScale:{x:100.0, topY:229, size:5.5, maxWidth:40, maxLines:1},
+    mfs_spo2:{x:35.0, topY:164, size:5.5, maxWidth:50, maxLines:1},
+    mfs_respRate:{x:35.0, topY:180, size:5.5, maxWidth:50, maxLines:1},
+    mfs_o2lmin:{x:35.0, topY:196, size:5.5, maxWidth:50, maxLines:1},
+    mfs_bloodglucose:{x:35.0, topY:212, size:5.5, maxWidth:80, maxLines:1},
+    mfs_gcs:{x:35.0, topY:228, size:5.5, maxWidth:30, maxLines:1},
+    mfs_painScale:{x:35.0, topY:244, size:5.5, maxWidth:40, maxLines:1},
     // Fluid balance - correct line positions from template
     mfs_intake:{x:34.8, topY:521, size:6, maxWidth:80, maxLines:1},
     mfs_output:{x:34.8, topY:527, size:6, maxWidth:80, maxLines:1},
@@ -4648,8 +4648,8 @@ const MAP_MFS = {
     mfs_handoverTime:{x:194.9, topY:641, size:6, maxWidth:50, maxLines:1},
     mfs_valuables:{x:117.6, topY:657, size:6, maxWidth:110, maxLines:4, lineH:9.6},
     // Signature specs (gleiche Struktur wie ADAC/Allianz)
-    sigEscort:{x:30, topY:818, w:200, h:30},
-    sigRecipient:{x:300, topY:818, w:230, h:30},
+    sigEscort:{x:30, topY:730, w:200, h:35},
+    sigRecipient:{x:300, topY:730, w:230, h:35},
   },
   // Body diagram area on page 1 (Section E crop)
   bodyDiagram:{x:375.6, topY:672, w:203.8, h:112},
@@ -4784,7 +4784,7 @@ async function buildPdfMFS(a, ctx){
 
   // Signatures – gleiche Methode wie ADAC/Allianz (drawSig mit Aspect-Ratio-Erhalt)
   const drawSigMFS = async (dataUrl, s) => {
-    if(!dataUrl || !dataUrl.startsWith('data:image/png')) return;
+    if(!dataUrl) return;
     try{
       const img = await ctx.pdfDoc.embedPng(dataUrl);
       const iw = img.width, ih = img.height;
@@ -4894,7 +4894,7 @@ const STEPS_MFS = [
       fieldWrap('Situation at takeover', textareaInput('mfs_situationTakeover',{rows:4})) +
       fieldWrap('Medical interventions inflight', textareaInput('mfs_interventionsInflight',{rows:4})) +
       fieldWrap('Wounds / Drains / Specials / Remarks / Infections', textareaInput('mfs_woundsDrains',{rows:4})) +
-      `<div class="row2">` + fieldWrap('Date of incident', textInput('mfs_dateIncident',{type:'date'})) + fieldWrap('Diagnosis', textInput('mfs_diagnosis')) + `</div>`,
+      `<div class="row2">` + fieldWrap('Date of incident', textInput('mfs_dateIncident',{type:'date'})) + diagnosisPicker('mfs_diagnosis',{label:'Diagnosis',rows:3,placeholder:'z.B. I63.9 Ischämischer Schlaganfall'}) + `</div>`,
   },
   // 5 – Medical Interventions Table
   { title:'Maßnahmen', subtitle:'Medical interventions (existing / new).',
@@ -5262,6 +5262,15 @@ function fillDemo(){
     answers.sigPatientDataUrl=_genSig(_fullName());
     answers.datum=_rDate(2024,2026);
   }
+  if(ACTIVE.id==='mfs'){
+    answers.mfs_sigEscort=_genSig('S. Witt');
+    answers.mfs_sigRecipient=_genSig(_rnd(DEMO.last));
+    answers.mfs_vitalsData=JSON.stringify([
+      {time:'08:00',temp:'36.8',spo2:'98',resp:'12',o2:'3',bz:'122',gcs:'15',pain:'3'},
+      {time:'10:30',temp:'36.9',spo2:'97',resp:'14',o2:'3',bz:'118',gcs:'15',pain:'4'},
+      {time:'14:00',temp:'37.1',spo2:'96',resp:'13',o2:'4',bz:'115',gcs:'14',pain:'5'},
+    ]);
+  }
   stepIndex = STEPS.length-1;
   saveDraft();
   window._demoFilled=true;
@@ -5434,9 +5443,16 @@ let _pdfjsP = null;
 async function loadPdfjs(){
   if(_pdfjsP) return _pdfjsP;
   _pdfjsP = (async()=>{
-    const pdfjs = await import('./lib/pdf.min.mjs');
-    pdfjs.GlobalWorkerOptions.workerSrc = './lib/pdf.worker.min.mjs';
-    return pdfjs;
+    try{
+      const pdfjs = await import('./lib/pdf.min.mjs');
+      pdfjs.GlobalWorkerOptions.workerSrc = './lib/pdf.worker.min.mjs';
+      return pdfjs;
+    }catch(e){
+      // Fallback: CDN version
+      const pdfjs = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.min.mjs');
+      pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
+      return pdfjs;
+    }
   })();
   return _pdfjsP;
 }
@@ -5476,11 +5492,7 @@ async function renderPdfPreview(container, bytes){
     iframe.src=blobUrl; iframe.title='PDF-Vorschau';
     iframe.style.cssText='width:100%;height:72vh;border:1px solid #d8d8e0;border-radius:8px;background:#fff;';
     container.appendChild(iframe);
-    const openLink=document.createElement('a');
-    openLink.href=blobUrl; openLink.target='_blank'; openLink.rel='noopener';
-    openLink.className='dl-btn'; openLink.style.cssText='display:inline-block;margin-top:10px;text-align:center;';
-    openLink.textContent='🗂️ Vorschau in neuem Tab öffnen';
-    container.appendChild(openLink);
+    // No 'open in new tab' button - removed per user request
     container.scrollIntoView({behavior:'smooth', block:'start'});
   }catch(e2){
     container.innerHTML='<div class="pv-loading">Vorschau nicht verfügbar – das PDF wurde trotzdem erzeugt. Bitte „PDF herunterladen" verwenden.</div>';
