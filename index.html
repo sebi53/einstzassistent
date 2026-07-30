@@ -217,6 +217,13 @@
   .sig-clear{margin-top:8px; font-size:12.5px; color:var(--navy); background:none; border:none; cursor:pointer; font-weight:700; padding:0;}
   .sig-block{margin-bottom:16px;}
   canvas.sig-canvas{width:100%; height:150px; display:block; touch-action:none; border:1.5px solid var(--line); border-radius:var(--radius-sm); background:#fff; box-shadow:inset 0 1px 2px rgba(15,23,42,.03);}
+  .vitals-grid{width:100%; border-collapse:collapse; margin:8px 0; font-size:14px;}
+  .vitals-grid th,.vitals-grid td{border:1px solid var(--line); padding:4px 6px; text-align:center;}
+  .vitals-grid th{background:var(--accent-soft,#eef2ff); font-weight:600; font-size:12px;}
+  .vitals-grid td:first-child{text-align:left; font-weight:600; white-space:nowrap; background:var(--surface,#f8fafc);}
+  .vitals-grid input{width:100%; border:none; text-align:center; font-size:13px; background:transparent; padding:2px;}
+  .vitals-grid input:focus{outline:1.5px solid var(--accent); border-radius:3px;}
+  .vitals-grid .time-input{max-width:70px;}
   .summary-block{margin-bottom:16px;}
   .summary-block h4{font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin:0 0 8px; font-weight:800;}
   .summary-row{display:flex; justify-content:space-between; font-size:13.5px; padding:7px 0; border-bottom:1px solid var(--line-2);}
@@ -401,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='6.9.1';
+const APP_VERSION='6.9.2';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -3579,7 +3586,6 @@ const homeBtn = document.getElementById('homeBtn');
 const demoBtn = document.getElementById('demoBtn');
 { const verEl=document.querySelector('.ver'); if(verEl) verEl.textContent='v'+APP_VERSION; }
 homeBtn.addEventListener('click', ()=>{
-  if(!confirm('Zurück zum Startbildschirm? Nicht gespeicherte Eingaben gehen verloren (sofern kein Entwurf aktiviert ist).')) return;
   flushDraft();
   stepIndex = 0;
   renderDocSelector();
@@ -3649,6 +3655,10 @@ btnNext.addEventListener('click', async ()=>{
     stepIndex++;
     saveDraft();
     renderStep();
+  } else {
+    // Last step: trigger PDF generation
+    const genBtn = document.getElementById('genPdfBtn');
+    if(genBtn){ genBtn.click(); }
   }
 });
 btnBack.addEventListener('click', ()=>{
@@ -4530,45 +4540,45 @@ const REQUIRED_MFS = {
 const MAP_MFS = {
   p0:{
     // Patient info (page 1, top-left) — precise 300 DPI crop measurements
-    mfs_name:{x:92.2, topY:85, size:7, maxWidth:400, maxLines:1},
-    mfs_address:{x:92.2, topY:120, size:7, maxWidth:400, maxLines:1},
-    mfs_country:{x:92.2, topY:133, size:7, maxWidth:400, maxLines:1},
-    mfs_dob:{x:92.2, topY:108, size:6, maxWidth:100, maxLines:1},
-    mfs_age:{x:240.5, topY:108, size:6, maxWidth:50, maxLines:1},
+    mfs_name:{x:92.2, topY:98, size:7, maxWidth:400, maxLines:1},
+    mfs_address:{x:92.2, topY:133, size:7, maxWidth:400, maxLines:1},
+    mfs_country:{x:92.2, topY:147, size:7, maxWidth:400, maxLines:1},
+    mfs_dob:{x:92.2, topY:120, size:6, maxWidth:100, maxLines:1},
+    mfs_age:{x:240.5, topY:120, size:6, maxWidth:50, maxLines:1},
     mfs_sex:{m:{x:288.4,topY:65.0,r:2.0}, f:{x:306.4,topY:65.0,r:2.0}},
-    mfs_flightno:{x:106.2, topY:175, size:6, maxWidth:85, maxLines:1},
+    mfs_flightno:{x:106.2, topY:180, size:6, maxWidth:85, maxLines:1},
     // Mode of transport checkboxes
-    mfs_walk:{ja:{x:69.1,topY:150,r:2.0}},
-    mfs_wheelchair:{ja:{x:122.4,topY:150,r:2.0}},
-    mfs_extraseat:{ja:{x:166.7,topY:150,r:2.0}},
-    mfs_ec:{ja:{x:200.9,topY:150,r:2.0}},
-    mfs_bc:{ja:{x:221.4,topY:150,r:2.0}},
-    mfs_fc:{ja:{x:241.2,topY:150,r:2.0}},
-    mfs_stretcher:{ja:{x:261.0,topY:150,r:2.0}},
-    mfs_ptc:{ja:{x:295.2,topY:150,r:2.0}},
+    mfs_walk:{ja:{x:69.1,topY:155,r:2.0}},
+    mfs_wheelchair:{ja:{x:122.4,topY:155,r:2.0}},
+    mfs_extraseat:{ja:{x:166.7,topY:155,r:2.0}},
+    mfs_ec:{ja:{x:200.9,topY:155,r:2.0}},
+    mfs_bc:{ja:{x:221.4,topY:155,r:2.0}},
+    mfs_fc:{ja:{x:241.2,topY:155,r:2.0}},
+    mfs_stretcher:{ja:{x:261.0,topY:155,r:2.0}},
+    mfs_ptc:{ja:{x:295.2,topY:155,r:2.0}},
     // Ref-No (right column)
-    mfs_refno:{x:404.6, topY:64, size:5, maxWidth:120, maxLines:1},
+    mfs_refno:{x:404.6, topY:77, size:5, maxWidth:120, maxLines:1},
     // Mission timestamps (right column) — line spacing ~14.5pt
-    mfs_missionStart:{x:486.0, topY:77, size:6, maxWidth:80, maxLines:1},
-    mfs_arrivalPatient:{x:486.0, topY:92, size:6, maxWidth:80, maxLines:1},
-    mfs_toAirport:{x:486.0, topY:105, size:6, maxWidth:80, maxLines:1},
-    mfs_atDestin:{x:486.0, topY:118, size:6, maxWidth:80, maxLines:1},
-    mfs_endMission:{x:486.0, topY:134, size:6, maxWidth:80, maxLines:1},
+    mfs_missionStart:{x:486.0, topY:92, size:6, maxWidth:80, maxLines:1},
+    mfs_arrivalPatient:{x:486.0, topY:105, size:6, maxWidth:80, maxLines:1},
+    mfs_toAirport:{x:486.0, topY:118, size:6, maxWidth:80, maxLines:1},
+    mfs_atDestin:{x:486.0, topY:134, size:6, maxWidth:80, maxLines:1},
+    mfs_endMission:{x:486.0, topY:147, size:6, maxWidth:80, maxLines:1},
     // Medical team
-    mfs_nurseName:{x:334.1, topY:155, size:6, maxWidth:180, maxLines:1},
-    mfs_nurseReg:{x:527.0, topY:155, size:5, maxWidth:60, maxLines:1},
-    mfs_doctorName:{x:334.1, topY:175, size:6, maxWidth:180, maxLines:1},
-    mfs_doctorReg:{x:527.0, topY:175, size:5, maxWidth:60, maxLines:1},
+    mfs_nurseName:{x:334.1, topY:160, size:6, maxWidth:180, maxLines:1},
+    mfs_nurseReg:{x:527.0, topY:160, size:5, maxWidth:60, maxLines:1},
+    mfs_doctorName:{x:334.1, topY:180, size:6, maxWidth:180, maxLines:1},
+    mfs_doctorReg:{x:527.0, topY:180, size:5, maxWidth:60, maxLines:1},
     // Transfer
-    mfs_takeoverFrom:{x:232.6, topY:205, size:6, maxWidth:330, maxLines:1},
-    mfs_handoverTo:{x:232.6, topY:245, size:6, maxWidth:330, maxLines:1},
+    mfs_takeoverFrom:{x:232.6, topY:210, size:6, maxWidth:330, maxLines:1},
+    mfs_handoverTo:{x:232.6, topY:250, size:6, maxWidth:330, maxLines:1},
     // Clinical narrative (left column)
-    mfs_chiefComplaint:{x:13.0, topY:280, size:6, maxWidth:390, maxLines:5, lineH:11.5},
-    mfs_situationTakeover:{x:13.0, topY:309, size:6, maxWidth:390, maxLines:13, lineH:11.5},
+    mfs_chiefComplaint:{x:13.0, topY:285, size:6, maxWidth:390, maxLines:5, lineH:11.5},
+    mfs_situationTakeover:{x:13.0, topY:315, size:6, maxWidth:390, maxLines:13, lineH:11.5},
     mfs_interventionsInflight:{x:13.0, topY:465, size:6, maxWidth:390, maxLines:14, lineH:11.5},
-    mfs_woundsDrains:{x:13.0, topY:653, size:6, maxWidth:325, maxLines:17, lineH:9.6},
+    mfs_woundsDrains:{x:13.0, topY:658, size:6, maxWidth:325, maxLines:17, lineH:9.6},
     // Right column: date + diagnosis
-    mfs_dateIncident:{x:502.6, topY:265, size:6, maxWidth:80, maxLines:1},
+    mfs_dateIncident:{x:502.6, topY:255, size:6, maxWidth:80, maxLines:1},
     mfs_diagnosis:{x:424.1, topY:300, size:6, maxWidth:150, maxLines:6, lineH:11.5},
     // Medical interventions table (Section D crop, 300 DPI)
     mfs_monExisting:{ja:{x:435.6,topY:301.0,r:2.0}}, mfs_monNew:{ja:{x:575.3,topY:301.0,r:2.0}},
@@ -4620,6 +4630,15 @@ const MAP_MFS = {
     mfs_intake:{x:34.8, topY:525.7, size:6, maxWidth:80, maxLines:1},
     mfs_output:{x:34.8, topY:534.6, size:6, maxWidth:80, maxLines:1},
     mfs_balance:{x:34.8, topY:543.2, size:6, maxWidth:80, maxLines:1},
+    // Vitals grid (time-based, 4 columns)
+    // Row y-positions: temp=132, spo2=148, resp=164, o2=180, bz=196, gcs=212, pain=228
+    // Column x-positions: 4 columns starting at x=105, spaced 120pt apart
+    mfs_vitalsGrid:{
+      rows:{temp:132, spo2:148, resp:164, o2:180, bz:196, gcs:212, pain:228},
+      cols:[105, 225, 345, 465], // x-positions for 4 time columns
+      timeRowY:116, // y-position for time labels
+      size:5.5,
+    },
     // Observations (remeasured at 300 DPI, crop y=500-841.89)
     mfs_trendsObservation:{x:2.9, topY:589.7, size:6, maxWidth:110, maxLines:12, lineH:9.6},
     mfs_conditionHandover:{x:117.6, topY:593.0, size:6, maxWidth:110, maxLines:6, lineH:9.6},
@@ -4709,6 +4728,23 @@ async function buildPdfMFS(a, ctx){
   wrapText(p0, a.mfs_naca, M.p0.mfs_naca);
   wrapText(p0, a.mfs_ameScore, M.p0.mfs_ameScore);
   if(a.mfs_fitToFly && M.p0.mfs_fitToFly[a.mfs_fitToFly]) mark(p0, M.p0.mfs_fitToFly[a.mfs_fitToFly]);
+
+  // Vitals grid (time-based values on page 2)
+  const vg = M.p1.mfs_vitalsGrid;
+  if(vg){
+    // Time labels
+    for(let c=0;c<4;c++){
+      const tv = a['mfs_vt'+(c+1)];
+      if(tv){ ctx.txt(p2, tv, {x:vg.cols[c]-5, topY:vg.timeRowY, size:5, maxWidth:50, maxLines:1}); }
+    }
+    // Values
+    for(const [rowKey, y] of Object.entries(vg.rows)){
+      for(let c=0;c<4;c++){
+        const val = a['mfs_v_'+rowKey+'_'+(c+1)];
+        if(val){ ctx.txt(p2, val, {x:vg.cols[c]-5, topY:y, size:vg.size, maxWidth:45, maxLines:1}); }
+      }
+    }
+  }
 
   // Body diagram: draw X marks
   if(a.mfs_bodyMarks){
@@ -4955,13 +4991,43 @@ const STEPS_MFS = [
     },
   },
   // 8 – Vitals & Trends (Page 2)
-  { title:'Vitalwerte', subtitle:'Vitalwerte und Bilanz (Seite 2).',
-    body: ()=> `<div class="row2">` + fieldWrap('Größe (cm)', textInput('mfs_size',{type:'number'})) + fieldWrap('Gewicht (kg)', textInput('mfs_weight',{type:'number'})) + `</div>` +
-      `<div class="row2">` + fieldWrap('SpO₂', textInput('mfs_spo2',{type:'number'})) + fieldWrap('Resp. rate /min', textInput('mfs_respRate',{type:'number'})) + `</div>` +
-      `<div class="row2">` + fieldWrap('Oxygen l/min', textInput('mfs_o2lmin',{type:'number'})) + fieldWrap('Blood glucose', textInput('mfs_bloodglucose')) + `</div>` +
-      `<div class="row2">` + fieldWrap('GCS', textInput('mfs_gcs',{type:'number'})) + fieldWrap('Pain scale /10', textInput('mfs_painScale',{type:'number'})) + `</div>` +
-      `<div class="row2">` + fieldWrap('Intake', textInput('mfs_intake')) + fieldWrap('Output', textInput('mfs_output')) + `</div>` +
-      fieldWrap('Balance', textInput('mfs_balance')),
+  { title:'Vitalwerte', subtitle:'Einmalwerte und Verlauf im Raster (Seite 2).',
+    body: ()=> {
+      const singleRow = `<div class="row2">` + fieldWrap('Größe (cm)', textInput('mfs_size',{type:'number'})) + fieldWrap('Gewicht (kg)', textInput('mfs_weight',{type:'number'})) + `</div>`;
+      const vitalsRows = [
+        ['Temp °C','temp'],
+        ['SpO₂ %','spo2'],
+        ['Resp./min','resp'],
+        ['O₂ l/min','o2'],
+        ['BZ mg/dl','bz'],
+        ['GCS','gcs'],
+        ['Pain /10','pain'],
+      ];
+      const cols = [1,2,3,4];
+      const thead = `<thead><tr><th>Vital</th>` + cols.map(c=>`<th><input type="time" class="time-input" data-vitals-time="${c}" value="${answers['mfs_vt'+c]||''}"></th>`).join('') + `</tr></thead>`;
+      const tbody = `<tbody>` + vitalsRows.map(([label,key])=>{
+        return `<tr><td>${label}</td>` + cols.map(c=>{
+          const v = answers['mfs_v_'+key+'_'+c]||'';
+          return `<td><input type="text" inputmode="decimal" data-vitals="${key}" data-col="${c}" value="${escapeHtml(v)}"></td>`;
+        }).join('') + `</tr>`;
+      }).join('') + `</tbody>`;
+      const grid = `<table class="vitals-grid">${thead}${tbody}</table>`;
+      const balance = `<div class="row2">` + fieldWrap('Intake', textInput('mfs_intake')) + fieldWrap('Output', textInput('mfs_output')) + `</div>` +
+        fieldWrap('Balance', textInput('mfs_balance'));
+      return singleRow + `<p style="font-size:13px;color:var(--muted);margin:8px 0 4px;">Verlaufsmessungen (X=Übernahme, D=Abflug, #=Vorfall, L=Ankunft):</p>` + grid + balance;
+    },
+    afterRender: (body)=>{
+      // Wire time inputs
+      body.querySelectorAll('[data-vitals-time]').forEach(inp=>{
+        inp.addEventListener('input', ()=>{ answers['mfs_vt'+inp.dataset.vitalsTime] = inp.value; });
+      });
+      // Wire value inputs
+      body.querySelectorAll('[data-vitals]').forEach(inp=>{
+        inp.addEventListener('input', ()=>{
+          answers['mfs_v_'+inp.dataset.vitals+'_'+inp.dataset.col] = inp.value;
+        });
+      });
+    },
   },
   // 9 – Observations & Handover
   { title:'Beobachtung & Übergabe', subtitle:'Verlauf, Übergabezustand und Wertsachen.',
@@ -4981,6 +5047,16 @@ const STEPS_MFS = [
         SEC('Patient',1, R('Name',answers.mfs_name)+R('Geburtsdatum',answers.mfs_dob)+R('Geschlecht',answers.mfs_sex==='m'?'männlich':'–')+R('Diagnose',answers.mfs_diagnosis)) +
         SEC('Transport & Einsatz',2, R('Flugnummer',answers.mfs_flightno)+R('Transportart', [answers.mfs_walk&&'walk',answers.mfs_wheelchair&&'wheelchair',answers.mfs_extraseat&&'extraseat',answers.mfs_ec&&'EC',answers.mfs_bc&&'BC',answers.mfs_fc&&'FC',answers.mfs_stretcher&&'stretcher',answers.mfs_ptc&&'PTC'].filter(Boolean).join(', ')||'–')+R('NACA',answers.mfs_naca)+R('AME Score',answers.mfs_ameScore)+R('Fit-to-fly',answers.mfs_fitToFly==='ja'?'Yes':(answers.mfs_fitToFly==='nein'?'No':'–'))) +
         SEC('Wichtige Infos',6, YN('Allergies','mfs_allergies')+YN('Intolerances','mfs_intolerances')+YN('Fear of flying','mfs_fearFlying')+YN('Pre-existing','mfs_preExisting')) +
+        SEC('Vitalwerte (Verlauf)',8, (()=>{
+          const cols=[1,2,3,4];
+          const rows=[['Temp','temp'],['SpO₂','spo2'],['Resp','resp'],['O₂','o2'],['BZ','bz'],['GCS','gcs'],['Pain','pain']];
+          let html='';
+          for(const [label,key] of rows){
+            const vals=cols.map(c=>answers['mfs_v_'+key+'_'+c]||'').filter(Boolean);
+            if(vals.length) html+=R(label, vals.join(' / '));
+          }
+          return html||R('Verlauf','–');
+        })()) +
         SEC('Körperdiagramm',7, R('Kreuze gesetzt', (()=>{ try{return JSON.parse(answers.mfs_bodyMarks||'[]').length}catch(e){return 0} })() )) +
         sigPad('mfs_sigEscort','Unterschrift Medical Escort') +
         sigPad('mfs_sigRecipient','Unterschrift Empfänger') +
