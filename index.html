@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.3.0';
+const APP_VERSION='7.3.1';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4633,16 +4633,16 @@ const MAP_MFS = {
     mfs_fitToFly:{ja:{x:494.3,topY:585,r:2.0}, nein:{x:524.5,topY:585,r:2.0}},
   },
   p1:{
-    // Page 2: size & weight (remeasured at 300 DPI, full page crop y=0-500)
-    mfs_size:{x:35.0, topY:132, size:6, maxWidth:50, maxLines:1},
-    mfs_weight:{x:35.0, topY:148, size:6, maxWidth:50, maxLines:1},
+    // Page 2: size & weight (remeasured at 300 DPI)
+    mfs_size:{x:35.0, topY:316.0, size:6, maxWidth:50, maxLines:1},
+    mfs_weight:{x:35.0, topY:343.0, size:6, maxWidth:50, maxLines:1},
     // Clinical data (single values, left column)
-    mfs_spo2:{x:35.0, topY:164, size:5.5, maxWidth:50, maxLines:1},
-    mfs_respRate:{x:35.0, topY:180, size:5.5, maxWidth:50, maxLines:1},
-    mfs_o2lmin:{x:35.0, topY:196, size:5.5, maxWidth:50, maxLines:1},
-    mfs_bloodglucose:{x:35.0, topY:212, size:5.5, maxWidth:80, maxLines:1},
-    mfs_gcs:{x:35.0, topY:228, size:5.5, maxWidth:30, maxLines:1},
-    mfs_painScale:{x:35.0, topY:244, size:5.5, maxWidth:40, maxLines:1},
+    mfs_spo2:{x:35.0, topY:358.4, size:5.5, maxWidth:50, maxLines:1},
+    mfs_respRate:{x:35.0, topY:373.1, size:5.5, maxWidth:50, maxLines:1},
+    mfs_o2lmin:{x:35.0, topY:386.6, size:5.5, maxWidth:50, maxLines:1},
+    mfs_bloodglucose:{x:35.0, topY:400.0, size:5.5, maxWidth:80, maxLines:1},
+    mfs_gcs:{x:35.0, topY:413.8, size:5.5, maxWidth:30, maxLines:1},
+    mfs_painScale:{x:35.0, topY:427.6, size:5.5, maxWidth:40, maxLines:1},
     // Fluid balance - correct line positions from template
     mfs_intake:{x:34.8, topY:521, size:6, maxWidth:80, maxLines:1},
     mfs_output:{x:34.8, topY:527, size:6, maxWidth:80, maxLines:1},
@@ -4652,9 +4652,11 @@ const MAP_MFS = {
     // Spacing: 9.6pt per 20 units (0.48pt/unit)
     // Columns: 12pt spacing starting at x=102.5 (midpoint of first grid cell)
     mfs_vitalsGrid:{
-      rows:{temp:132, spo2:148, resp:164, o2:180, bz:196, gcs:212, pain:228},
+      // Vital value rows (measured at 300 DPI from template)
+      // SpO2, Resp, O2, BZ, GCS, Pain are below the chart
+      rows:{spo2:358.4, resp:373.1, o2:386.6, bz:400.0, gcs:413.8, pain:427.6},
       cols:[102.5,114.5,126.5,138.5,150.5,162.5,174.5,186.5,198.5,210.5,222.5,234.5,246.5,258.5,270.5,282.5,294.5,306.5,318.5,330.5],
-      timeRowY:122,
+      timeRowY:48.6,
       size:5.5,
     },
     // Observations (remeasured at 300 DPI, crop y=500-841.89)
@@ -4768,20 +4770,19 @@ async function buildPdfMFS(a, ctx){
   if(vg){
     let measurements = [];
     try { measurements = JSON.parse(a.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
-    // HR scale: 200@y=59.1, 80@y=116.7 → 0.48pt per BPM
-    // y = 59.1 + (200 - hr) * 0.48
-    const hrToY = (hr) => 59.1 + (200 - hr) * 0.48;
-    // Temp scale: 34°C@y=132, 42°C@y=132-32=100? Need to estimate.
-    // Based on template: temp row at y=132, scale likely 34-42°C over ~32pt
-    // 34°C at y=132, 42°C at y=100 → 1°C = 4pt → y = 132 - (temp-34)*4
-    const tempToY = (t) => 132 - (parseFloat(t) - 34) * 4;
-    // RR (blood pressure) plotted as arrow, use same scale as HR
-    const rrToY = (sys) => 59.1 + (200 - sys) * 0.48;
+    // Chart scale: 220@y=59.1, 20@y=116.7 → 0.288pt per unit
+    // y = 59.1 + (220 - val) * 0.288
+    const hrToY = (hr) => 59.1 + (220 - hr) * 0.288;
+    // Temp scale: 37°C at 80 mark (y=99.42), 38°C at 100 mark (y=93.66)
+    // 1°C = 5.76pt → y = 99.42 + (37 - temp) * 5.76
+    const tempToY = (t) => 99.42 + (37 - parseFloat(t)) * 5.76;
+    // RR (blood pressure) plotted as arrow, same scale as HR
+    const rrToY = (sys) => 59.1 + (220 - sys) * 0.288;
     
     measurements.forEach((m, i) => {
       const colX = vg.cols[Math.min(i, vg.cols.length-1)];
       // Time label (text)
-      if(m.time){ ctx.txt(p1, m.time, {x:colX-8, topY:vg.timeRowY, size:4.5, maxWidth:45, maxLines:1}); }
+      if(m.time){ ctx.txt(p1, m.time, {x:colX, topY:vg.timeRowY, size:4, center:true, maxWidth:45, maxLines:1}); }
       // Temperature: circle with dot in center
       if(m.temp){
         const ty = PAGE_H - tempToY(m.temp);
@@ -4805,10 +4806,10 @@ async function buildPdfMFS(a, ctx){
           p1.drawLine({ start:{x:colX+1.5, y:ry+2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
         }
       }
-      // Other values as text in their rows
+      // Other values as text in their rows (no temp row - temp is plotted in chart)
       const textRows = {spo2:vg.rows.spo2, resp:vg.rows.resp, o2:vg.rows.o2, bz:vg.rows.bz, gcs:vg.rows.gcs, pain:vg.rows.pain};
       for(const [key, y] of Object.entries(textRows)){
-        if(m[key]){ ctx.txt(p1, m[key], {x:colX-3, topY:y, size:vg.size, maxWidth:35, maxLines:1}); }
+        if(m[key]){ ctx.txt(p1, m[key], {x:colX, topY:y, size:vg.size, center:true, maxWidth:35, maxLines:1}); }
       }
     });
   }
@@ -5330,6 +5331,58 @@ function fillDemo(){
     answers.datum=_rDate(2024,2026);
   }
   if(ACTIVE.id==='mfs'){
+    answers.mfs_name=_fullName();
+    answers.mfs_address=_rnd(DEMO.last)+'straße '+_ri(1,120);
+    answers.mfs_country='D – '+_ri(80000,81999)+' '+_rnd(['München','Augsburg','Ingolstadt','Rosenheim']);
+    answers.mfs_dob=_rDate(1940,2005);
+    answers.mfs_age=String(_ri(18,85));
+    answers.mfs_sex=_rnd(['m','f']);
+    answers.mfs_flightno=_rnd(DEMO.airports)+'-'+_rnd(DEMO.airports)+' '+_ri(100,9999);
+    answers.mfs_refno='MFS-'+_ri(10000,99999);
+    answers.mfs_missionStart=_rTime();
+    answers.mfs_arrivalPatient=_rTime();
+    answers.mfs_toAirport=_rTime();
+    answers.mfs_atDestin=_rTime();
+    answers.mfs_endMission=_rTime();
+    answers.mfs_nurseName=_rnd(DEMO.last)+', '+_firstName();
+    answers.mfs_nurseReg='REG-'+_ri(1000,9999);
+    answers.mfs_doctorName='Dr. '+_rnd(DEMO.last);
+    answers.mfs_doctorReg='REG-'+_ri(1000,9999);
+    answers.mfs_takeoverFrom=_rnd(DEMO.clinics);
+    answers.mfs_takeoverType=_rnd(['RTW','KTW','ITS','NEF']);
+    answers.mfs_handoverTo=_rnd(DEMO.clinics);
+    answers.mfs_handoverType=_rnd(['RTW','KTW','ITS','NEF']);
+    answers.mfs_chiefComplaint=_rnd(DEMO.freeText);
+    answers.mfs_situationTakeover=_rnd(DEMO.freeText);
+    answers.mfs_interventionsInflight=_rnd(DEMO.freeText);
+    answers.mfs_woundsDrains=_rnd(['Wundversorgung steril','Drainage mediastinal','Pleuradrainage rechts','keine Dränage']);
+    answers.mfs_dateIncident=_rDate(2024,2026);
+    answers.mfs_diagnosis=_rnd(['I21.0 Akuter Myokardinfarkt','S72.001 Schenkelhalsfraktur','J96.1 Akute respiratorische Insuffizienz','E11.7 Diabetes mellitus Typ 2','I63.50 zerebraler Infarkt']);
+    answers.mfs_monExisting='on'; answers.mfs_o2Existing='on'; answers.mfs_o2Lmin=String(_ri(2,6));
+    answers.mfs_iv1Existing='on'; answers.mfs_iv1Size=String(_ri(16,20)); answers.mfs_iv1Loc=_rnd(['r. Unterarm','l. Handrücken','r. Ellenbeuge']);
+    answers.mfs_iv2New='on'; answers.mfs_iv2Size=String(_ri(16,20)); answers.mfs_iv2Loc=_rnd(['l. Unterarm','r. Handrücken']);
+    answers.mfs_foleyExisting='on'; answers.mfs_foleyCH=String(_ri(12,18)); answers.mfs_foleyDate=_rDate(2024,2026);
+    answers.mfs_allergies=_rnd(['keine bekannt','Penicillin','Jod','Latex']);
+    answers.mfs_intolerances=_rnd(['keine bekannt','NSAR','Metformin']);
+    answers.mfs_preExisting=_rnd(['Z.n. Stent 2023','arterielle Hypertonie','COPD','Diabetes mellitus Typ 2']);
+    answers.mfs_naca=String(_ri(2,5));
+    answers.mfs_ameScore=String(_ri(10,40));
+    answers.mfs_fitToFly='ja';
+    answers.mfs_size=String(_ri(160,190));
+    answers.mfs_weight=String(_ri(60,120));
+    answers.mfs_spo2=String(_ri(94,99));
+    answers.mfs_respRate=String(_ri(12,20));
+    answers.mfs_o2lmin=String(_ri(2,6));
+    answers.mfs_bloodglucose=String(_ri(80,180));
+    answers.mfs_gcs=String(_ri(13,15));
+    answers.mfs_painScale=String(_ri(0,7));
+    answers.mfs_intake=String(_ri(500,2500));
+    answers.mfs_output=String(_ri(400,2000));
+    answers.mfs_balance=String(_ri(-500,1000));
+    answers.mfs_trendsObservation=_rnd(DEMO.freeText);
+    answers.mfs_conditionHandover=_rnd(['stabil','schmerzadaptiert','wach, orientiert','vigilanzgemindert']);
+    answers.mfs_handoverTime=_rTime();
+    answers.mfs_valuables=_rnd(['Uhr, Geldbeutel','Handy, Brille','keine Wertsachen','Schmuck']);
     answers.mfs_sigEscort=_genSig('S. Witt');
     answers.mfs_sigRecipient=_genSig(_rnd(DEMO.last));
     answers.mfs_vitalsData=JSON.stringify([
