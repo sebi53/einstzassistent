@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.2.1';
+const APP_VERSION='7.3.0';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -3166,7 +3166,8 @@ async function buildFilledPdf(a){
     let y;
     if(ACTIVE && ACTIVE.lineAnchored){
       // topY = Eingabe-Linie; Baseline sitzt genau auf der Linie (Text ruht auf)
-      y = PAGE_H - spec.topY + (spec.voff||0);
+      const gvoff = ACTIVE.voff || 0;
+      y = PAGE_H - spec.topY + (spec.voff||0) + gvoff;
     } else {
       y = PAGE_H - spec.topY - size - _off + (spec.voff||0);
     }
@@ -3196,7 +3197,8 @@ function txtFit(page, str, spec){
   function txtCells(page, str, centers, topY, size, voff){
     if(!centers || !centers.length) return;
     const digits = String(str).replace(/[^0-9A-Za-z]/g,'').split('');
-    const yBase = PAGE_H - topY - size*0.35 + (voff||0);
+    const gvoff_cells = (ACTIVE && ACTIVE.voff) ? ACTIVE.voff : 0;
+    const yBase = PAGE_H - topY - size*0.35 + (voff||0) + gvoff_cells;
     for(let i=0;i<digits.length && i<centers.length;i++){
       const w = font.widthOfTextAtSize(digits[i], size);
       page.drawText(digits[i], { x: centers[i] - w/2, y: yBase, size, font, color: INK });
@@ -3204,7 +3206,8 @@ function txtFit(page, str, spec){
   }
   function mark(page, spec){
     if(!spec) return;
-    page.drawEllipse({ x: spec.x, y: PAGE_H - spec.topY, xScale: spec.r||2, yScale: spec.r||2, color: INK });
+    const gvoff_mark = (ACTIVE && ACTIVE.voff) ? ACTIVE.voff : 0;
+    page.drawEllipse({ x: spec.x, y: PAGE_H - spec.topY + gvoff_mark, xScale: spec.r||2, yScale: spec.r||2, color: INK });
   }
   function wrapText(page, str, spec){
     if(!spec || !str) return;
@@ -3229,7 +3232,8 @@ function txtFit(page, str, spec){
       let y;
       if(lineAnchored){
         // topY = Eingabe-Linie; Baseline sitzt genau auf der Linie (Text ruht auf)
-        y = PAGE_H - (spec.topY + i*lineH) + (spec.voff||0);
+        const gvoff = (ACTIVE && ACTIVE.voff) ? ACTIVE.voff : 0;
+        y = PAGE_H - (spec.topY + i*lineH) + (spec.voff||0) + gvoff;
       } else {
         y = PAGE_H - (spec.topY + i*lineH) - size - 0.6 + (spec.voff||0);
       }
@@ -3293,7 +3297,8 @@ function txtFit(page, str, spec){
     function txtCells(page, str, centers, topY, size, voff){
     if(!centers || !centers.length) return;
     const digits = String(str).replace(/[^0-9A-Za-z]/g,'').split('');
-    const yBase = PAGE_H - topY - size*0.35 + (voff||0);
+    const gvoff_cells = (ACTIVE && ACTIVE.voff) ? ACTIVE.voff : 0;
+    const yBase = PAGE_H - topY - size*0.35 + (voff||0) + gvoff_cells;
     for(let i=0;i<digits.length && i<centers.length;i++){
       const w = font.widthOfTextAtSize(digits[i], size);
       page.drawText(digits[i], { x: centers[i] - w/2, y: yBase, size, font, color: INK });
@@ -3301,7 +3306,8 @@ function txtFit(page, str, spec){
   }
   function mark(page, spec){
     if(!spec) return;
-    page.drawEllipse({ x: spec.x, y: PAGE_H - spec.topY, xScale: spec.r||2, yScale: spec.r||2, color: INK });
+    const gvoff_mark = (ACTIVE && ACTIVE.voff) ? ACTIVE.voff : 0;
+    page.drawEllipse({ x: spec.x, y: PAGE_H - spec.topY + gvoff_mark, xScale: spec.r||2, yScale: spec.r||2, color: INK });
   }
   function wrapText(page, str, spec){
     if(!spec || !str) return;
@@ -4543,15 +4549,15 @@ const REQUIRED_MFS = {
 const MAP_MFS = {
   p0:{
     // Patient info (page 1, top-left) — precise 300 DPI crop measurements
-    mfs_name:{x:92.2, topY:92, size:7, maxWidth:400, maxLines:1},
-    mfs_address:{x:92.2, topY:118, size:7, maxWidth:400, maxLines:1},
-    mfs_country:{x:92.2, topY:131, size:7, maxWidth:400, maxLines:1},
-    mfs_dob:{x:88.6, topY:104, size:6, maxWidth:100, maxLines:1},
+    mfs_name:{x:92.2, topY:91.2, size:7, maxWidth:400, maxLines:1},
+    mfs_address:{x:92.2, topY:119.3, size:7, maxWidth:400, maxLines:1},
+    mfs_country:{x:92.2, topY:133.2, size:7, maxWidth:400, maxLines:1},
+    mfs_dob:{x:88.6, topY:105.6, size:6, maxWidth:100, maxLines:1},
     mfs_dobCells:[88.6,93.4,100.6,105.4,112.6,117.4,122.2,127.0],
-    mfs_age:{x:160.6, topY:104, size:6, maxWidth:50, maxLines:1},
+    mfs_age:{x:160.6, topY:105.6, size:6, maxWidth:50, maxLines:1},
     mfs_ageCells:[160.6,165.4],
     mfs_sex:{m:{x:288.4,topY:78,r:2.0}, f:{x:306.4,topY:78,r:2.0}},
-    mfs_flightno:{x:106.2, topY:148, size:6, maxWidth:85, maxLines:1},
+    mfs_flightno:{x:106.2, topY:145.7, size:6, maxWidth:85, maxLines:1},
     // Mode of transport checkboxes
     mfs_walk:{ja:{x:50.8,topY:146,r:2.0}},
     mfs_wheelchair:{ja:{x:74.3,topY:146,r:2.0}},
@@ -4562,26 +4568,26 @@ const MAP_MFS = {
     mfs_stretcher:{ja:{x:153.5,topY:146,r:2.0}},
     mfs_ptc:{ja:{x:175.1,topY:146,r:2.0}},
     // Ref-No (right column)
-    mfs_refno:{x:404.6, topY:71, size:5, maxWidth:120, maxLines:1},
+    mfs_refno:{x:404.6, topY:73.7, size:5, maxWidth:120, maxLines:1},
     // Mission timestamps (right column) — line spacing ~14.5pt
-    mfs_missionStart:{x:486.0, topY:84, size:6, maxWidth:80, maxLines:1},
+    mfs_missionStart:{x:486.0, topY:88.8, size:6, maxWidth:80, maxLines:1},
     mfs_missionStartCells:[490,498,506,514],
-    mfs_arrivalPatient:{x:486.0, topY:97, size:6, maxWidth:80, maxLines:1},
+    mfs_arrivalPatient:{x:486.0, topY:101.3, size:6, maxWidth:80, maxLines:1},
     mfs_arrivalPatientCells:[490,498,506,514],
-    mfs_toAirport:{x:486.0, topY:110, size:6, maxWidth:80, maxLines:1},
+    mfs_toAirport:{x:486.0, topY:105.6, size:6, maxWidth:80, maxLines:1},
     mfs_toAirportCells:[490,498,506,514],
-    mfs_atDestin:{x:486.0, topY:123, size:6, maxWidth:80, maxLines:1},
+    mfs_atDestin:{x:486.0, topY:119.3, size:6, maxWidth:80, maxLines:1},
     mfs_atDestinCells:[490,498,506,514],
-    mfs_endMission:{x:486.0, topY:135, size:6, maxWidth:80, maxLines:1},
+    mfs_endMission:{x:486.0, topY:133.2, size:6, maxWidth:80, maxLines:1},
     mfs_endMissionCells:[490,498,506,514],
     // Medical team
-    mfs_nurseName:{x:334.1, topY:148, size:6, maxWidth:180, maxLines:1},
-    mfs_nurseReg:{x:527.0, topY:148, size:5, maxWidth:60, maxLines:1},
-    mfs_doctorName:{x:334.1, topY:160, size:6, maxWidth:180, maxLines:1},
-    mfs_doctorReg:{x:527.0, topY:160, size:5, maxWidth:60, maxLines:1},
+    mfs_nurseName:{x:334.1, topY:145.7, size:6, maxWidth:180, maxLines:1},
+    mfs_nurseReg:{x:527.0, topY:145.7, size:5, maxWidth:60, maxLines:1},
+    mfs_doctorName:{x:334.1, topY:160.1, size:6, maxWidth:180, maxLines:1},
+    mfs_doctorReg:{x:527.0, topY:160.1, size:5, maxWidth:60, maxLines:1},
     // Transfer
-    mfs_takeoverFrom:{x:232.6, topY:183, size:6, maxWidth:330, maxLines:1},
-    mfs_handoverTo:{x:232.6, topY:212, size:6, maxWidth:330, maxLines:1},
+    mfs_takeoverFrom:{x:232.6, topY:169.7, size:6, maxWidth:330, maxLines:1},
+    mfs_handoverTo:{x:232.6, topY:198.5, size:6, maxWidth:330, maxLines:1},
     // Clinical narrative (left column)
     mfs_chiefComplaint:{x:13.0, topY:289, size:6, maxWidth:390, maxLines:4, lineH:12.2},
     mfs_situationTakeover:{x:13.0, topY:378, size:6, maxWidth:390, maxLines:7, lineH:12.2},
@@ -4641,13 +4647,14 @@ const MAP_MFS = {
     mfs_intake:{x:34.8, topY:521, size:6, maxWidth:80, maxLines:1},
     mfs_output:{x:34.8, topY:527, size:6, maxWidth:80, maxLines:1},
     mfs_balance:{x:34.8, topY:532, size:6, maxWidth:80, maxLines:1},
-    // Vitals grid (time-based, 4 columns)
-    // Row y-positions: temp=132, spo2=148, resp=164, o2=180, bz=196, gcs=212, pain=228
-    // Column x-positions: 4 columns starting at x=105, spaced 120pt apart
+    // Vitals grid — measured from template at 300 DPI
+    // Chart scale rows: 200@y=59.1, 180@y=68.7, 160@y=78.3, 140@y=87.9, 120@y=97.5, 100@y=107.1, 80@y=116.7
+    // Spacing: 9.6pt per 20 units (0.48pt/unit)
+    // Columns: 12pt spacing starting at x=102.5 (midpoint of first grid cell)
     mfs_vitalsGrid:{
       rows:{temp:132, spo2:148, resp:164, o2:180, bz:196, gcs:212, pain:228},
-      cols:[40,47,55,62,70,77,85,92,100,107,115,122,130,137,145,152,160,167,175,182], // 7.44pt spacing, up to 20 columns
-      timeRowY:116,
+      cols:[102.5,114.5,126.5,138.5,150.5,162.5,174.5,186.5,198.5,210.5,222.5,234.5,246.5,258.5,270.5,282.5,294.5,306.5,318.5,330.5],
+      timeRowY:122,
       size:5.5,
     },
     // Observations (remeasured at 300 DPI, crop y=500-841.89)
@@ -4655,9 +4662,11 @@ const MAP_MFS = {
     mfs_conditionHandover:{x:117.6, topY:563, size:6, maxWidth:110, maxLines:5, lineH:9.6},
     mfs_handoverTime:{x:194.9, topY:641, size:6, maxWidth:50, maxLines:1},
     mfs_valuables:{x:117.6, topY:657, size:6, maxWidth:110, maxLines:4, lineH:9.6},
-    // Signature specs (gleiche Struktur wie ADAC/Allianz)
-    sigEscort:{x:50, topY:754, w:180, h:20},
-    sigRecipient:{x:330, topY:754, w:180, h:20},
+    // Signature specs — measured from template at 300 DPI
+    // Left line (medical escort): y=808.5, x=302-388pt
+    // Right line (recipient): y=813, x=434-488pt
+    sigEscort:{x:300, topY:809, w:88, h:18},
+    sigRecipient:{x:430, topY:813, w:60, h:18},
   },
   // Body diagram area on page 1 (Section E crop)
   bodyDiagram:{x:375.6, topY:672, w:203.8, h:112},
@@ -4759,15 +4768,15 @@ async function buildPdfMFS(a, ctx){
   if(vg){
     let measurements = [];
     try { measurements = JSON.parse(a.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
-    // HR scale: 160@y=115, 140@y=135, 120@y=155, 100@y=175, 80@y=195
-    // Linear: y = 115 + (160 - hr) * 1.0  (1 BPM = 1pt)
-    const hrToY = (hr) => 115 + (160 - hr);
+    // HR scale: 200@y=59.1, 80@y=116.7 → 0.48pt per BPM
+    // y = 59.1 + (200 - hr) * 0.48
+    const hrToY = (hr) => 59.1 + (200 - hr) * 0.48;
     // Temp scale: 34°C@y=132, 42°C@y=132-32=100? Need to estimate.
     // Based on template: temp row at y=132, scale likely 34-42°C over ~32pt
     // 34°C at y=132, 42°C at y=100 → 1°C = 4pt → y = 132 - (temp-34)*4
     const tempToY = (t) => 132 - (parseFloat(t) - 34) * 4;
     // RR (blood pressure) plotted as arrow, use same scale as HR
-    const rrToY = (sys) => 115 + (160 - sys);
+    const rrToY = (sys) => 59.1 + (200 - sys) * 0.48;
     
     measurements.forEach((m, i) => {
       const colX = vg.cols[Math.min(i, vg.cols.length-1)];
@@ -5185,7 +5194,7 @@ const DOC_MFS = {
   title:'Transportprotokoll MFS',
   desc:'Patient Care Report (EAAME) – 2 Seiten, mit Körperdiagramm.',
   steps: STEPS_MFS, map: MAP_MFS, templateB64: TEMPLATE_MFS_B64, required: REQUIRED_MFS,
-  textScale: 1.0, lineAnchored: true,
+  textScale: 1.0, lineAnchored: true, voff: -1.2,
   blank: blankMFS, buildPdf: buildPdfMFS,
   filename:()=>'Transportprotokoll_MFS.pdf',
 };
