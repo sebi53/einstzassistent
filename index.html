@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.3.1';
+const APP_VERSION='7.4.0';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4551,52 +4551,52 @@ const MAP_MFS = {
     // Patient info (page 1, top-left) — precise 300 DPI crop measurements
     mfs_name:{x:92.2, topY:91.2, size:7, maxWidth:400, maxLines:1},
     mfs_address:{x:92.2, topY:119.3, size:7, maxWidth:400, maxLines:1},
-    mfs_country:{x:92.2, topY:133.2, size:7, maxWidth:400, maxLines:1},
+    mfs_country:{x:92.2, topY:136.6, size:7, maxWidth:400, maxLines:1},
     mfs_dob:{x:88.6, topY:105.6, size:6, maxWidth:100, maxLines:1},
     mfs_dobCells:[88.6,93.4,100.6,105.4,112.6,117.4,122.2,127.0],
     mfs_age:{x:160.6, topY:105.6, size:6, maxWidth:50, maxLines:1},
     mfs_ageCells:[160.6,165.4],
-    mfs_sex:{m:{x:288.4,topY:78,r:2.0}, f:{x:306.4,topY:78,r:2.0}},
-    mfs_flightno:{x:106.2, topY:145.7, size:6, maxWidth:85, maxLines:1},
+    mfs_sex:{m:{x:288.4,topY:74,r:2.0}, f:{x:306.4,topY:74,r:2.0}},
+    mfs_flightno:{x:106.2, topY:154.8, size:6, maxWidth:85, maxLines:1},
     // Mode of transport checkboxes
-    mfs_walk:{ja:{x:50.8,topY:146,r:2.0}},
-    mfs_wheelchair:{ja:{x:74.3,topY:146,r:2.0}},
-    mfs_extraseat:{ja:{x:98.3,topY:146,r:2.0}},
-    mfs_ec:{ja:{x:117.5,topY:146,r:2.0}},
-    mfs_bc:{ja:{x:129.5,topY:146,r:2.0}},
-    mfs_fc:{ja:{x:141.5,topY:146,r:2.0}},
-    mfs_stretcher:{ja:{x:153.5,topY:146,r:2.0}},
-    mfs_ptc:{ja:{x:175.1,topY:146,r:2.0}},
+    mfs_walk:{ja:{x:52,topY:150.7,r:2.0}},
+    mfs_wheelchair:{ja:{x:70,topY:150.7,r:2.0}},
+    mfs_extraseat:{ja:{x:85,topY:150.7,r:2.0}},
+    mfs_ec:{ja:{x:99,topY:150.7,r:2.0}},
+    mfs_bc:{ja:{x:107,topY:150.7,r:2.0}},
+    mfs_fc:{ja:{x:115,topY:150.7,r:2.0}},
+    mfs_stretcher:{ja:{x:124,topY:150.7,r:2.0}},
+    mfs_ptc:{ja:{x:139,topY:150.7,r:2.0}},
     // Ref-No (right column)
-    mfs_refno:{x:404.6, topY:73.7, size:5, maxWidth:120, maxLines:1},
+    mfs_refno:{x:404.6, topY:65, size:5, maxWidth:120, maxLines:1},
     // Mission timestamps (right column) — line spacing ~14.5pt
-    mfs_missionStart:{x:486.0, topY:88.8, size:6, maxWidth:80, maxLines:1},
+    mfs_missionStart:{x:486.0, topY:73, size:6, maxWidth:80, maxLines:1},
     mfs_missionStartCells:[490,498,506,514],
-    mfs_arrivalPatient:{x:486.0, topY:101.3, size:6, maxWidth:80, maxLines:1},
+    mfs_arrivalPatient:{x:486.0, topY:84, size:6, maxWidth:80, maxLines:1},
     mfs_arrivalPatientCells:[490,498,506,514],
-    mfs_toAirport:{x:486.0, topY:105.6, size:6, maxWidth:80, maxLines:1},
+    mfs_toAirport:{x:486.0, topY:96, size:6, maxWidth:80, maxLines:1},
     mfs_toAirportCells:[490,498,506,514],
-    mfs_atDestin:{x:486.0, topY:119.3, size:6, maxWidth:80, maxLines:1},
+    mfs_atDestin:{x:486.0, topY:107, size:6, maxWidth:80, maxLines:1},
     mfs_atDestinCells:[490,498,506,514],
-    mfs_endMission:{x:486.0, topY:133.2, size:6, maxWidth:80, maxLines:1},
+    mfs_endMission:{x:486.0, topY:120, size:6, maxWidth:80, maxLines:1},
     mfs_endMissionCells:[490,498,506,514],
     // Medical team
-    mfs_nurseName:{x:334.1, topY:145.7, size:6, maxWidth:180, maxLines:1},
-    mfs_nurseReg:{x:527.0, topY:145.7, size:5, maxWidth:60, maxLines:1},
-    mfs_doctorName:{x:334.1, topY:160.1, size:6, maxWidth:180, maxLines:1},
-    mfs_doctorReg:{x:527.0, topY:160.1, size:5, maxWidth:60, maxLines:1},
+    mfs_nurseName:{x:334.1, topY:156.5, size:6, maxWidth:180, maxLines:1},
+    mfs_nurseReg:{x:527.0, topY:156.5, size:5, maxWidth:60, maxLines:1},
+    mfs_doctorName:{x:334.1, topY:159, size:6, maxWidth:180, maxLines:1},
+    mfs_doctorReg:{x:527.0, topY:159, size:5, maxWidth:60, maxLines:1},
     // Transfer
-    mfs_takeoverFrom:{x:232.6, topY:169.7, size:6, maxWidth:330, maxLines:1},
-    mfs_handoverTo:{x:232.6, topY:198.5, size:6, maxWidth:330, maxLines:1},
+    mfs_takeoverFrom:{x:232.6, topY:195, size:6, maxWidth:330, maxLines:1},
+    mfs_handoverTo:{x:232.6, topY:229, size:6, maxWidth:330, maxLines:1},
     // Clinical narrative (left column)
-    mfs_chiefComplaint:{x:13.0, topY:289, size:6, maxWidth:390, maxLines:4, lineH:12.2},
-    mfs_situationTakeover:{x:13.0, topY:378, size:6, maxWidth:390, maxLines:7, lineH:12.2},
-    mfs_interventionsInflight:{x:13.0, topY:498, size:6, maxWidth:390, maxLines:8, lineH:12.2},
-    mfs_woundsDrains:{x:13.0, topY:698, size:6, maxWidth:325, maxLines:7, lineH:12.2},
+    mfs_chiefComplaint:{x:13.0, topY:292, size:6, maxWidth:390, maxLines:4, lineH:16.7},
+    mfs_situationTakeover:{x:13.0, topY:482, size:6, maxWidth:390, maxLines:7, lineH:16.8},
+    mfs_interventionsInflight:{x:13.0, topY:601, size:6, maxWidth:390, maxLines:8, lineH:18.3},
+    mfs_woundsDrains:{x:13.0, topY:748, size:6, maxWidth:325, maxLines:5, lineH:19.5},
     // Right column: date + diagnosis
-    mfs_dateIncident:{x:502.6, topY:274, size:6, maxWidth:80, maxLines:1},
+    mfs_dateIncident:{x:502.6, topY:282, size:6, maxWidth:80, maxLines:1},
     mfs_dateIncidentCells:[505,510,517,522,529,534,539,544],
-    mfs_diagnosis:{x:424.1, topY:302, size:6, maxWidth:150, maxLines:3, lineH:12.2},
+    mfs_diagnosis:{x:424.1, topY:311, size:6, maxWidth:150, maxLines:3, lineH:13},
     // Medical interventions table (Section D crop, 300 DPI)
     mfs_monExisting:{ja:{x:423.8,topY:369.3,r:2.0}}, mfs_monNew:{ja:{x:517.9,topY:369.3,r:2.0}},
     mfs_o2Existing:{ja:{x:423.8,topY:376.5,r:2.0}}, mfs_o2New:{ja:{x:517.9,topY:376.5,r:2.0}},
@@ -4628,9 +4628,9 @@ const MAP_MFS = {
     mfs_excretion:{ja:{x:507.1,topY:516.9,r:2.0}, nein:{x:518.6,topY:516.9,r:2.0}},
     mfs_contMeds:{ja:{x:507.1,topY:524.1,r:2.0}, nein:{x:518.6,topY:524.1,r:2.0}},
     // Fit-to-fly
-    mfs_naca:{x:431.3, topY:580, size:6, maxWidth:40, maxLines:1},
-    mfs_ameScore:{x:459.4, topY:580, size:6, maxWidth:40, maxLines:1},
-    mfs_fitToFly:{ja:{x:494.3,topY:585,r:2.0}, nein:{x:524.5,topY:585,r:2.0}},
+    mfs_naca:{x:431.8, topY:581.4, size:6, maxWidth:40, maxLines:1},
+    mfs_ameScore:{x:459.9, topY:581.4, size:6, maxWidth:40, maxLines:1},
+    mfs_fitToFly:{ja:{x:494.8,topY:585,r:2.0}, nein:{x:525.0,topY:585,r:2.0}},
   },
   p1:{
     // Page 2: size & weight (remeasured at 300 DPI)
@@ -4794,16 +4794,24 @@ async function buildPdfMFS(a, ctx){
         const hy = PAGE_H - hrToY(parseInt(m.hr));
         p1.drawEllipse({ x: colX, y: hy, xScale: 1.5, yScale: 1.5, color: INK });
       }
-      // RR (blood pressure): arrow pointing up
+      // RR (blood pressure): systole = arrow down, diastole = arrow up
       if(m.rr){
         const parts = String(m.rr).split('/');
         const sys = parseInt(parts[0]);
+        const dia = parts[1] ? parseInt(parts[1]) : null;
         if(sys){
           const ry = PAGE_H - rrToY(sys);
-          // Draw small arrow (triangle pointing up)
-          p1.drawLine({ start:{x:colX, y:ry}, end:{x:colX, y:ry+4}, thickness:0.5, color:INK });
-          p1.drawLine({ start:{x:colX-1.5, y:ry+2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
-          p1.drawLine({ start:{x:colX+1.5, y:ry+2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
+          // Systole: arrow pointing DOWN
+          p1.drawLine({ start:{x:colX, y:ry}, end:{x:colX, y:ry-4}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX-1.5, y:ry-2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX+1.5, y:ry-2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
+        }
+        if(dia){
+          const dy = PAGE_H - rrToY(dia);
+          // Diastole: arrow pointing UP
+          p1.drawLine({ start:{x:colX, y:dy}, end:{x:colX, y:dy+4}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX-1.5, y:dy+2}, end:{x:colX, y:dy}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX+1.5, y:dy+2}, end:{x:colX, y:dy}, thickness:0.5, color:INK });
         }
       }
       // Other values as text in their rows (no temp row - temp is plotted in chart)
