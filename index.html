@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.2.0';
+const APP_VERSION='7.2.1';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4450,7 +4450,7 @@ const MAP_FEEDBACK = {
 };
 
 async function buildPdfFeedback(a, ctx){
-  const { pages, font, INK, PAGE_W, PAGE_H, txt, mark, wrapText } = ctx;
+  const { pages, font, INK, PAGE_W, PAGE_H, txt, txtCells, mark, wrapText } = ctx;
   const p0 = pages[0];
   const M = MAP_FEEDBACK;
   const ts = (ACTIVE && ACTIVE.textScale) || 1.3;
@@ -4664,7 +4664,7 @@ const MAP_MFS = {
 };
 
 async function buildPdfMFS(a, ctx){
-  const { pages, font, INK, PAGE_W, PAGE_H, txt, mark, wrapText } = ctx;
+  const { pages, font, INK, PAGE_W, PAGE_H, txt, txtCells, mark, wrapText } = ctx;
   const p0 = pages[0];
   const p1 = pages[1];
   const M = MAP_MFS;
@@ -4776,13 +4776,13 @@ async function buildPdfMFS(a, ctx){
       // Temperature: circle with dot in center
       if(m.temp){
         const ty = PAGE_H - tempToY(m.temp);
-        p1.drawCircle({ x: colX, y: ty, size: 3 });
-        p1.drawCircle({ x: colX, y: ty, size: 0.8 });
+        p1.drawEllipse({ x: colX, y: ty, xScale: 3, yScale: 3, color: INK });
+        p1.drawEllipse({ x: colX, y: ty, xScale: 0.8, yScale: 0.8, color: INK });
       }
       // HR: small dot
       if(m.hr){
         const hy = PAGE_H - hrToY(parseInt(m.hr));
-        p1.drawCircle({ x: colX, y: hy, size: 1.5 });
+        p1.drawEllipse({ x: colX, y: hy, xScale: 1.5, yScale: 1.5, color: INK });
       }
       // RR (blood pressure): arrow pointing up
       if(m.rr){
