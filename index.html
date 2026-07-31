@@ -408,7 +408,7 @@
 </div>
 
 <script>
-const APP_VERSION='7.1.0';
+const APP_VERSION='7.2.0';
 /* ============================================================
    TEMPLATE PDF (Base64, komprimiertes Original-ADAC-Formular)
    ============================================================ */
@@ -4546,27 +4546,34 @@ const MAP_MFS = {
     mfs_name:{x:92.2, topY:92, size:7, maxWidth:400, maxLines:1},
     mfs_address:{x:92.2, topY:118, size:7, maxWidth:400, maxLines:1},
     mfs_country:{x:92.2, topY:131, size:7, maxWidth:400, maxLines:1},
-    mfs_dob:{x:92.2, topY:104, size:6, maxWidth:100, maxLines:1},
-    mfs_age:{x:240.5, topY:104, size:6, maxWidth:50, maxLines:1},
+    mfs_dob:{x:88.6, topY:104, size:6, maxWidth:100, maxLines:1},
+    mfs_dobCells:[88.6,93.4,100.6,105.4,112.6,117.4,122.2,127.0],
+    mfs_age:{x:160.6, topY:104, size:6, maxWidth:50, maxLines:1},
+    mfs_ageCells:[160.6,165.4],
     mfs_sex:{m:{x:288.4,topY:78,r:2.0}, f:{x:306.4,topY:78,r:2.0}},
     mfs_flightno:{x:106.2, topY:148, size:6, maxWidth:85, maxLines:1},
     // Mode of transport checkboxes
-    mfs_walk:{ja:{x:69.1,topY:160,r:2.0}},
-    mfs_wheelchair:{ja:{x:122.4,topY:160,r:2.0}},
-    mfs_extraseat:{ja:{x:166.7,topY:160,r:2.0}},
-    mfs_ec:{ja:{x:200.9,topY:160,r:2.0}},
-    mfs_bc:{ja:{x:221.4,topY:160,r:2.0}},
-    mfs_fc:{ja:{x:241.2,topY:160,r:2.0}},
-    mfs_stretcher:{ja:{x:261.0,topY:160,r:2.0}},
-    mfs_ptc:{ja:{x:295.2,topY:160,r:2.0}},
+    mfs_walk:{ja:{x:50.8,topY:146,r:2.0}},
+    mfs_wheelchair:{ja:{x:74.3,topY:146,r:2.0}},
+    mfs_extraseat:{ja:{x:98.3,topY:146,r:2.0}},
+    mfs_ec:{ja:{x:117.5,topY:146,r:2.0}},
+    mfs_bc:{ja:{x:129.5,topY:146,r:2.0}},
+    mfs_fc:{ja:{x:141.5,topY:146,r:2.0}},
+    mfs_stretcher:{ja:{x:153.5,topY:146,r:2.0}},
+    mfs_ptc:{ja:{x:175.1,topY:146,r:2.0}},
     // Ref-No (right column)
     mfs_refno:{x:404.6, topY:71, size:5, maxWidth:120, maxLines:1},
     // Mission timestamps (right column) — line spacing ~14.5pt
     mfs_missionStart:{x:486.0, topY:84, size:6, maxWidth:80, maxLines:1},
+    mfs_missionStartCells:[490,498,506,514],
     mfs_arrivalPatient:{x:486.0, topY:97, size:6, maxWidth:80, maxLines:1},
+    mfs_arrivalPatientCells:[490,498,506,514],
     mfs_toAirport:{x:486.0, topY:110, size:6, maxWidth:80, maxLines:1},
+    mfs_toAirportCells:[490,498,506,514],
     mfs_atDestin:{x:486.0, topY:123, size:6, maxWidth:80, maxLines:1},
+    mfs_atDestinCells:[490,498,506,514],
     mfs_endMission:{x:486.0, topY:135, size:6, maxWidth:80, maxLines:1},
+    mfs_endMissionCells:[490,498,506,514],
     // Medical team
     mfs_nurseName:{x:334.1, topY:148, size:6, maxWidth:180, maxLines:1},
     mfs_nurseReg:{x:527.0, topY:148, size:5, maxWidth:60, maxLines:1},
@@ -4582,37 +4589,38 @@ const MAP_MFS = {
     mfs_woundsDrains:{x:13.0, topY:698, size:6, maxWidth:325, maxLines:7, lineH:12.2},
     // Right column: date + diagnosis
     mfs_dateIncident:{x:502.6, topY:274, size:6, maxWidth:80, maxLines:1},
+    mfs_dateIncidentCells:[505,510,517,522,529,534,539,544],
     mfs_diagnosis:{x:424.1, topY:302, size:6, maxWidth:150, maxLines:3, lineH:12.2},
     // Medical interventions table (Section D crop, 300 DPI)
-    mfs_monExisting:{ja:{x:435.6,topY:378,r:2.0}}, mfs_monNew:{ja:{x:575.3,topY:378,r:2.0}},
-    mfs_o2Existing:{ja:{x:435.6,topY:384,r:2.0}}, mfs_o2New:{ja:{x:575.3,topY:384,r:2.0}},
-    mfs_o2Lmin:{x:516.2, topY:387, size:5, maxWidth:50, maxLines:1},
-    mfs_iv1Existing:{ja:{x:435.6,topY:390,r:2.0}}, mfs_iv1New:{ja:{x:575.3,topY:390,r:2.0}},
-    mfs_iv1Size:{x:478.4, topY:393, size:5, maxWidth:30, maxLines:1},
-    mfs_iv1Loc:{x:515.2, topY:393, size:5, maxWidth:60, maxLines:1},
-    mfs_iv2Existing:{ja:{x:435.6,topY:396,r:2.0}}, mfs_iv2New:{ja:{x:575.3,topY:396,r:2.0}},
-    mfs_iv2Size:{x:478.4, topY:399, size:5, maxWidth:30, maxLines:1},
-    mfs_iv2Loc:{x:515.2, topY:399, size:5, maxWidth:60, maxLines:1},
-    mfs_cvcExisting:{ja:{x:435.6,topY:402,r:2.0}}, mfs_cvcNew:{ja:{x:575.3,topY:402,r:2.0}},
-    mfs_cvcLoc:{x:507.6, topY:405, size:5, maxWidth:60, maxLines:1},
-    mfs_foleyExisting:{ja:{x:435.6,topY:408,r:2.0}}, mfs_foleyNew:{ja:{x:575.3,topY:408,r:2.0}},
-    mfs_foleyCH:{x:475.6, topY:411, size:5, maxWidth:30, maxLines:1},
-    mfs_foleyDate:{x:511.9, topY:411, size:5, maxWidth:50, maxLines:1},
-    mfs_gastricExisting:{ja:{x:435.6,topY:414,r:2.0}}, mfs_gastricNew:{ja:{x:575.3,topY:414,r:2.0}},
-    mfs_gastricCH:{x:475.6, topY:417, size:5, maxWidth:30, maxLines:1},
-    mfs_gastricDate:{x:511.9, topY:417, size:5, maxWidth:50, maxLines:1},
-    mfs_feedingExisting:{ja:{x:435.6,topY:420,r:2.0}}, mfs_feedingNew:{ja:{x:575.3,topY:420,r:2.0}},
-    mfs_feedingCH:{x:475.6, topY:423, size:5, maxWidth:30, maxLines:1},
-    mfs_feedingDate:{x:511.9, topY:423, size:5, maxWidth:50, maxLines:1},
-    mfs_pumpsExisting:{ja:{x:435.6,topY:426,r:2.0}}, mfs_pumpsNew:{ja:{x:575.3,topY:426,r:2.0}},
-    mfs_mattressExisting:{ja:{x:435.6,topY:432,r:2.0}}, mfs_mattressNew:{ja:{x:575.3,topY:432,r:2.0}},
+    mfs_monExisting:{ja:{x:423.8,topY:369.3,r:2.0}}, mfs_monNew:{ja:{x:517.9,topY:369.3,r:2.0}},
+    mfs_o2Existing:{ja:{x:423.8,topY:376.5,r:2.0}}, mfs_o2New:{ja:{x:517.9,topY:376.5,r:2.0}},
+    mfs_o2Lmin:{x:480.0, topY:376.5, size:5, maxWidth:30, maxLines:1},
+    mfs_iv1Existing:{ja:{x:423.8,topY:383.7,r:2.0}}, mfs_iv1New:{ja:{x:517.9,topY:383.7,r:2.0}},
+    mfs_iv1Size:{x:470.0, topY:383.7, size:5, maxWidth:20, maxLines:1},
+    mfs_iv1Loc:{x:500.0, topY:383.7, size:5, maxWidth:50, maxLines:1},
+    mfs_iv2Existing:{ja:{x:423.8,topY:390.9,r:2.0}}, mfs_iv2New:{ja:{x:517.9,topY:390.9,r:2.0}},
+    mfs_iv2Size:{x:470.0, topY:390.9, size:5, maxWidth:20, maxLines:1},
+    mfs_iv2Loc:{x:500.0, topY:390.9, size:5, maxWidth:50, maxLines:1},
+    mfs_cvcExisting:{ja:{x:423.8,topY:398.1,r:2.0}}, mfs_cvcNew:{ja:{x:517.9,topY:398.1,r:2.0}},
+    mfs_cvcLoc:{x:480.0, topY:398.1, size:5, maxWidth:50, maxLines:1},
+    mfs_foleyExisting:{ja:{x:423.8,topY:405.3,r:2.0}}, mfs_foleyNew:{ja:{x:517.9,topY:405.3,r:2.0}},
+    mfs_foleyCH:{x:475.0, topY:405.3, size:5, maxWidth:25, maxLines:1},
+    mfs_foleyDate:{x:510.0, topY:405.3, size:5, maxWidth:50, maxLines:1},
+    mfs_gastricExisting:{ja:{x:423.8,topY:412.5,r:2.0}}, mfs_gastricNew:{ja:{x:517.9,topY:412.5,r:2.0}},
+    mfs_gastricCH:{x:475.0, topY:412.5, size:5, maxWidth:25, maxLines:1},
+    mfs_gastricDate:{x:510.0, topY:412.5, size:5, maxWidth:50, maxLines:1},
+    mfs_feedingExisting:{ja:{x:423.8,topY:419.7,r:2.0}}, mfs_feedingNew:{ja:{x:517.9,topY:419.7,r:2.0}},
+    mfs_feedingCH:{x:475.0, topY:419.7, size:5, maxWidth:25, maxLines:1},
+    mfs_feedingDate:{x:510.0, topY:419.7, size:5, maxWidth:50, maxLines:1},
+    mfs_pumpsExisting:{ja:{x:423.8,topY:426.9,r:2.0}}, mfs_pumpsNew:{ja:{x:517.9,topY:426.9,r:2.0}},
+    mfs_mattressExisting:{ja:{x:423.8,topY:434.1,r:2.0}}, mfs_mattressNew:{ja:{x:517.9,topY:434.1,r:2.0}},
     // Important info (Section E crop, yes/no checkboxes)
-    mfs_allergies:{ja:{x:558.0,topY:498,r:2.0}, nein:{x:577.4,topY:498,r:2.0}},
-    mfs_intolerances:{ja:{x:558.0,topY:510,r:2.0}, nein:{x:577.4,topY:510,r:2.0}},
-    mfs_fearFlying:{ja:{x:558.0,topY:522,r:2.0}, nein:{x:577.4,topY:522,r:2.0}},
-    mfs_preExisting:{ja:{x:558.0,topY:535,r:2.0}, nein:{x:577.4,topY:535,r:2.0}},
-    mfs_excretion:{ja:{x:558.0,topY:547,r:2.0}, nein:{x:577.4,topY:547,r:2.0}},
-    mfs_contMeds:{ja:{x:558.0,topY:559,r:2.0}, nein:{x:577.4,topY:559,r:2.0}},
+    mfs_allergies:{ja:{x:507.1,topY:488.1,r:2.0}, nein:{x:518.6,topY:488.1,r:2.0}},
+    mfs_intolerances:{ja:{x:507.1,topY:495.3,r:2.0}, nein:{x:518.6,topY:495.3,r:2.0}},
+    mfs_fearFlying:{ja:{x:507.1,topY:502.5,r:2.0}, nein:{x:518.6,topY:502.5,r:2.0}},
+    mfs_preExisting:{ja:{x:507.1,topY:509.7,r:2.0}, nein:{x:518.6,topY:509.7,r:2.0}},
+    mfs_excretion:{ja:{x:507.1,topY:516.9,r:2.0}, nein:{x:518.6,topY:516.9,r:2.0}},
+    mfs_contMeds:{ja:{x:507.1,topY:524.1,r:2.0}, nein:{x:518.6,topY:524.1,r:2.0}},
     // Fit-to-fly
     mfs_naca:{x:431.3, topY:580, size:6, maxWidth:40, maxLines:1},
     mfs_ameScore:{x:459.4, topY:580, size:6, maxWidth:40, maxLines:1},
@@ -4648,8 +4656,8 @@ const MAP_MFS = {
     mfs_handoverTime:{x:194.9, topY:641, size:6, maxWidth:50, maxLines:1},
     mfs_valuables:{x:117.6, topY:657, size:6, maxWidth:110, maxLines:4, lineH:9.6},
     // Signature specs (gleiche Struktur wie ADAC/Allianz)
-    sigEscort:{x:30, topY:730, w:200, h:35},
-    sigRecipient:{x:300, topY:730, w:230, h:35},
+    sigEscort:{x:50, topY:754, w:180, h:20},
+    sigRecipient:{x:330, topY:754, w:180, h:20},
   },
   // Body diagram area on page 1 (Section E crop)
   bodyDiagram:{x:375.6, topY:672, w:203.8, h:112},
@@ -4665,8 +4673,15 @@ async function buildPdfMFS(a, ctx){
   wrapText(p0, a.mfs_name, M.p0.mfs_name);
   wrapText(p0, a.mfs_address, M.p0.mfs_address);
   wrapText(p0, a.mfs_country, M.p0.mfs_country);
-  wrapText(p0, a.mfs_dob, M.p0.mfs_dob);
-  wrapText(p0, a.mfs_age, M.p0.mfs_age);
+  // DOB: convert YYYY-MM-DD to DD.MM.YYYY and place digits in cells
+  if(a.mfs_dob && M.p0.mfs_dobCells){
+    const d=a.mfs_dob; let dd='';
+    if(/^(\d{4})-(\d{2})-(\d{2})$/.test(d)) dd=d.slice(8,10)+d.slice(5,7)+d.slice(0,4);
+    else dd=d.replace(/[^0-9]/g,'');
+    txtCells(p0,dd,M.p0.mfs_dobCells,M.p0.mfs_dob.topY,5.5,0);
+  } else wrapText(p0, a.mfs_dob, M.p0.mfs_dob);
+  if(a.mfs_age && M.p0.mfs_ageCells) txtCells(p0,String(a.mfs_age),M.p0.mfs_ageCells,M.p0.mfs_age.topY,5.5,0);
+  else wrapText(p0, a.mfs_age, M.p0.mfs_age);
   if(a.mfs_sex && M.p0.mfs_sex[a.mfs_sex]) mark(p0, M.p0.mfs_sex[a.mfs_sex]);
   wrapText(p0, a.mfs_flightno, M.p0.mfs_flightno);
 
@@ -4677,11 +4692,11 @@ async function buildPdfMFS(a, ctx){
 
   // Ref-No & mission times
   wrapText(p0, a.mfs_refno, M.p0.mfs_refno);
-  wrapText(p0, a.mfs_missionStart, M.p0.mfs_missionStart);
-  wrapText(p0, a.mfs_arrivalPatient, M.p0.mfs_arrivalPatient);
-  wrapText(p0, a.mfs_toAirport, M.p0.mfs_toAirport);
-  wrapText(p0, a.mfs_atDestin, M.p0.mfs_atDestin);
-  wrapText(p0, a.mfs_endMission, M.p0.mfs_endMission);
+  if(a.mfs_missionStart && M.p0.mfs_missionStartCells) txtCells(p0,a.mfs_missionStart.replace(/[^0-9]/g,''),M.p0.mfs_missionStartCells,M.p0.mfs_missionStart.topY,5.5,0); else wrapText(p0, a.mfs_missionStart, M.p0.mfs_missionStart);
+  if(a.mfs_arrivalPatient && M.p0.mfs_arrivalPatientCells) txtCells(p0,a.mfs_arrivalPatient.replace(/[^0-9]/g,''),M.p0.mfs_arrivalPatientCells,M.p0.mfs_arrivalPatient.topY,5.5,0); else wrapText(p0, a.mfs_arrivalPatient, M.p0.mfs_arrivalPatient);
+  if(a.mfs_toAirport && M.p0.mfs_toAirportCells) txtCells(p0,a.mfs_toAirport.replace(/[^0-9]/g,''),M.p0.mfs_toAirportCells,M.p0.mfs_toAirport.topY,5.5,0); else wrapText(p0, a.mfs_toAirport, M.p0.mfs_toAirport);
+  if(a.mfs_atDestin && M.p0.mfs_atDestinCells) txtCells(p0,a.mfs_atDestin.replace(/[^0-9]/g,''),M.p0.mfs_atDestinCells,M.p0.mfs_atDestin.topY,5.5,0); else wrapText(p0, a.mfs_atDestin, M.p0.mfs_atDestin);
+  if(a.mfs_endMission && M.p0.mfs_endMissionCells) txtCells(p0,a.mfs_endMission.replace(/[^0-9]/g,''),M.p0.mfs_endMissionCells,M.p0.mfs_endMission.topY,5.5,0); else wrapText(p0, a.mfs_endMission, M.p0.mfs_endMission);
 
   // Medical team
   wrapText(p0, a.mfs_nurseName, M.p0.mfs_nurseName);
@@ -4690,15 +4705,20 @@ async function buildPdfMFS(a, ctx){
   wrapText(p0, a.mfs_doctorReg, M.p0.mfs_doctorReg);
 
   // Transfer
-  wrapText(p0, a.mfs_takeoverFrom, M.p0.mfs_takeoverFrom);
-  wrapText(p0, a.mfs_handoverTo, M.p0.mfs_handoverTo);
+  wrapText(p0, a.mfs_takeoverFrom + (a.mfs_takeoverType ? ' (' + ({rtw:'RTW',ktw:'KTW',its:'ITS',normal:'Normalstation',ambulance:'Ambulance',micu:'MICU',other:'Sonstiges'}[a.mfs_takeoverType]||'') + ')' : ''), M.p0.mfs_takeoverFrom);
+  wrapText(p0, a.mfs_handoverTo + (a.mfs_handoverType ? ' (' + ({rtw:'RTW',ktw:'KTW',its:'ITS',normal:'Normalstation',ambulance:'Ambulance',micu:'MICU',other:'Sonstiges'}[a.mfs_handoverType]||'') + ')' : ''), M.p0.mfs_handoverTo);
 
   // Clinical narrative
   wrapText(p0, a.mfs_chiefComplaint, M.p0.mfs_chiefComplaint);
   wrapText(p0, a.mfs_situationTakeover, M.p0.mfs_situationTakeover);
   wrapText(p0, a.mfs_interventionsInflight, M.p0.mfs_interventionsInflight);
   wrapText(p0, a.mfs_woundsDrains, M.p0.mfs_woundsDrains);
-  wrapText(p0, a.mfs_dateIncident, M.p0.mfs_dateIncident);
+  if(a.mfs_dateIncident && M.p0.mfs_dateIncidentCells){
+    const d=a.mfs_dateIncident; let dd='';
+    if(/^(\d{4})-(\d{2})-(\d{2})$/.test(d)) dd=d.slice(8,10)+d.slice(5,7)+d.slice(0,4);
+    else dd=d.replace(/[^0-9]/g,'');
+    txtCells(p0,dd,M.p0.mfs_dateIncidentCells,M.p0.mfs_dateIncident.topY,5.5,0);
+  } else wrapText(p0, a.mfs_dateIncident, M.p0.mfs_dateIncident);
   wrapText(p0, a.mfs_diagnosis, M.p0.mfs_diagnosis);
 
   // Medical interventions table
@@ -4733,17 +4753,53 @@ async function buildPdfMFS(a, ctx){
   if(a.mfs_fitToFly && M.p0.mfs_fitToFly[a.mfs_fitToFly]) mark(p0, M.p0.mfs_fitToFly[a.mfs_fitToFly]);
 
   // Vitals grid (dynamic measurements on page 2)
+  // Plot HR as dots, RR as arrows, Temp as circle-with-dot in the chart
+  // Other values (SpO2, Resp, O2, BZ, GCS, Pain) as text in their rows
   const vg = M.p1.mfs_vitalsGrid;
   if(vg){
     let measurements = [];
     try { measurements = JSON.parse(a.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
+    // HR scale: 160@y=115, 140@y=135, 120@y=155, 100@y=175, 80@y=195
+    // Linear: y = 115 + (160 - hr) * 1.0  (1 BPM = 1pt)
+    const hrToY = (hr) => 115 + (160 - hr);
+    // Temp scale: 34°C@y=132, 42°C@y=132-32=100? Need to estimate.
+    // Based on template: temp row at y=132, scale likely 34-42°C over ~32pt
+    // 34°C at y=132, 42°C at y=100 → 1°C = 4pt → y = 132 - (temp-34)*4
+    const tempToY = (t) => 132 - (parseFloat(t) - 34) * 4;
+    // RR (blood pressure) plotted as arrow, use same scale as HR
+    const rrToY = (sys) => 115 + (160 - sys);
+    
     measurements.forEach((m, i) => {
       const colX = vg.cols[Math.min(i, vg.cols.length-1)];
-      // Time label
+      // Time label (text)
       if(m.time){ ctx.txt(p1, m.time, {x:colX-8, topY:vg.timeRowY, size:4.5, maxWidth:45, maxLines:1}); }
-      // Values
-      for(const [key, y] of Object.entries(vg.rows)){
-        if(m[key]){ ctx.txt(p1, m[key], {x:colX-5, topY:y, size:vg.size, maxWidth:40, maxLines:1}); }
+      // Temperature: circle with dot in center
+      if(m.temp){
+        const ty = PAGE_H - tempToY(m.temp);
+        p1.drawCircle({ x: colX, y: ty, size: 3 });
+        p1.drawCircle({ x: colX, y: ty, size: 0.8 });
+      }
+      // HR: small dot
+      if(m.hr){
+        const hy = PAGE_H - hrToY(parseInt(m.hr));
+        p1.drawCircle({ x: colX, y: hy, size: 1.5 });
+      }
+      // RR (blood pressure): arrow pointing up
+      if(m.rr){
+        const parts = String(m.rr).split('/');
+        const sys = parseInt(parts[0]);
+        if(sys){
+          const ry = PAGE_H - rrToY(sys);
+          // Draw small arrow (triangle pointing up)
+          p1.drawLine({ start:{x:colX, y:ry}, end:{x:colX, y:ry+4}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX-1.5, y:ry+2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
+          p1.drawLine({ start:{x:colX+1.5, y:ry+2}, end:{x:colX, y:ry}, thickness:0.5, color:INK });
+        }
+      }
+      // Other values as text in their rows
+      const textRows = {spo2:vg.rows.spo2, resp:vg.rows.resp, o2:vg.rows.o2, bz:vg.rows.bz, gcs:vg.rows.gcs, pain:vg.rows.pain};
+      for(const [key, y] of Object.entries(textRows)){
+        if(m[key]){ ctx.txt(p1, m[key], {x:colX-3, topY:y, size:vg.size, maxWidth:35, maxLines:1}); }
       }
     });
   }
@@ -4886,7 +4942,9 @@ const STEPS_MFS = [
     body: ()=> `<div class="row2">` + fieldWrap('Nurse / Paramedic', textInput('mfs_nurseName',{autocapitalize:'words'})) + fieldWrap('EAAME Reg. No.', textInput('mfs_nurseReg')) + `</div>` +
       `<div class="row2">` + fieldWrap('Medical Doctor', textInput('mfs_doctorName',{autocapitalize:'words'})) + fieldWrap('EAAME Reg. No.', textInput('mfs_doctorReg')) + `</div>` +
       fieldWrap('Takeover from (Name/Info)', textInput('mfs_takeoverFrom',{autocapitalize:'words'})) +
-      fieldWrap('Handed over to (Name/Info)', textInput('mfs_handoverTo',{autocapitalize:'words'})),
+      fieldWrap('Takeover type', selectInput('mfs_takeoverType',[{value:'',label:'–'},{value:'rtw',label:'RTW'},{value:'ktw',label:'KTW'},{value:'its',label:'ITS / Nursing Station'},{value:'normal',label:'Normalstation'},{value:'ambulance',label:'Ambulance'},{value:'micu',label:'MICU'},{value:'other',label:'Sonstiges'}])) +
+      fieldWrap('Handed over to (Name/Info)', textInput('mfs_handoverTo',{autocapitalize:'words'})) +
+      fieldWrap('Handover type', selectInput('mfs_handoverType',[{value:'',label:'–'},{value:'rtw',label:'RTW'},{value:'ktw',label:'KTW'},{value:'its',label:'ITS / Nursing Station'},{value:'normal',label:'Normalstation'},{value:'ambulance',label:'Ambulance'},{value:'micu',label:'MICU'},{value:'other',label:'Sonstiges'}])),
   },
   // 4 – Clinical Narrative
   { title:'Klinischer Verlauf', subtitle:'Anamnese und Verlauf.',
@@ -4999,8 +5057,8 @@ const STEPS_MFS = [
       // Dynamic vitals measurements
       let measurements = [];
       try { measurements = JSON.parse(answers.mfs_vitalsData||'[]'); } catch(e) { measurements = []; }
-      if(measurements.length === 0) measurements = [{time:'',temp:'',spo2:'',resp:'',o2:'',bz:'',gcs:'',pain:''}];
-      const fields = [['time','Zeit (UTC)','time'],['temp','Temp °C','text'],['spo2','SpO₂','number'],['resp','Resp/min','number'],['o2','O₂ l/min','number'],['bz','BZ mg/dl','text'],['gcs','GCS','number'],['pain','Pain /10','number']];
+      if(measurements.length === 0) measurements = [{time:'',temp:'',hr:'',rr:'',spo2:'',resp:'',o2:'',bz:'',gcs:'',pain:''}];
+      const fields = [['time','Zeit (UTC)','time'],['temp','Temp °C','text'],['hr','HR/min','number'],['rr','RR sys/dia','text'],['spo2','SpO₂','number'],['resp','Resp/min','number'],['o2','O₂ l/min','number'],['bz','BZ mg/dl','text'],['gcs','GCS','number'],['pain','Pain /10','number']];
       const renderRow = (m,i) => `<tr class="vit-row" data-idx="${i}">` +
         fields.map(([key,label,type])=>{
           if(key==='time') return `<td><input type="time" data-vf="time" data-idx="${i}" value="${escapeHtml(m.time||'')}" style="max-width:70px"></td>`;
@@ -5266,9 +5324,9 @@ function fillDemo(){
     answers.mfs_sigEscort=_genSig('S. Witt');
     answers.mfs_sigRecipient=_genSig(_rnd(DEMO.last));
     answers.mfs_vitalsData=JSON.stringify([
-      {time:'08:00',temp:'36.8',spo2:'98',resp:'12',o2:'3',bz:'122',gcs:'15',pain:'3'},
-      {time:'10:30',temp:'36.9',spo2:'97',resp:'14',o2:'3',bz:'118',gcs:'15',pain:'4'},
-      {time:'14:00',temp:'37.1',spo2:'96',resp:'13',o2:'4',bz:'115',gcs:'14',pain:'5'},
+      {time:'08:00',temp:'36.8',hr:'72',rr:'120/80',spo2:'98',resp:'12',o2:'3',bz:'122',gcs:'15',pain:'3'},
+      {time:'10:30',temp:'36.9',hr:'78',rr:'130/85',spo2:'97',resp:'14',o2:'3',bz:'118',gcs:'15',pain:'4'},
+      {time:'14:00',temp:'37.1',hr:'85',rr:'140/90',spo2:'96',resp:'13',o2:'4',bz:'115',gcs:'14',pain:'5'},
     ]);
   }
   stepIndex = STEPS.length-1;
@@ -5460,6 +5518,7 @@ async function loadPdfjs(){
 async function renderPdfPreview(container, bytes){
   if(!container) return;
   container.innerHTML = '<div class="pv-loading">PDF-Vorschau wird gerendert …</div>';
+  // Try pdf.js first
   try{
     const pdfjs = await loadPdfjs();
     const pdf = await pdfjs.getDocument({data: new Uint8Array(bytes.slice(0))}).promise;
@@ -5479,23 +5538,22 @@ async function renderPdfPreview(container, bytes){
     }
     container.scrollIntoView({behavior:'smooth', block:'start'});
     return;
-  }catch(e){ /* Fallback unten */ }
-  // Fallback: nativer PDF-Viewer, falls pdf.js das PDF nicht als Canvas rendern kann
-  // (z.B. bestimmte Vorlagen auf Safari/iOS). iframe (Desktop) + Tab-Öffnen (iOS).
+  }catch(e){ console.warn('pdf.js failed:', e); }
+  // Fallback: <object> tag (more reliable than iframe on iOS/Safari)
   try{
     const blobUrl = URL.createObjectURL(new Blob([bytes], {type:'application/pdf'}));
     container.innerHTML='';
     const head=document.createElement('div'); head.className='pv-head';
-    head.innerHTML='<span>📄 PDF-Vorschau</span><span class="pv-pages">Native Vorschau · vor dem Speichern prüfen</span>';
+    head.innerHTML='<span>📄 PDF-Vorschau</span><span class="pv-pages">Vorschau · vor dem Speichern prüfen</span>';
     container.appendChild(head);
-    const iframe=document.createElement('iframe');
-    iframe.src=blobUrl; iframe.title='PDF-Vorschau';
-    iframe.style.cssText='width:100%;height:72vh;border:1px solid #d8d8e0;border-radius:8px;background:#fff;';
-    container.appendChild(iframe);
-    // No 'open in new tab' button - removed per user request
+    const obj=document.createElement('object');
+    obj.data=blobUrl; obj.type='application/pdf';
+    obj.style.cssText='width:100%;height:72vh;border:1px solid #d8d8e0;border-radius:8px;background:#fff;';
+    obj.setAttribute('aria-label','PDF-Vorschau');
+    container.appendChild(obj);
     container.scrollIntoView({behavior:'smooth', block:'start'});
   }catch(e2){
-    container.innerHTML='<div class="pv-loading">Vorschau nicht verfügbar – das PDF wurde trotzdem erzeugt. Bitte „PDF herunterladen" verwenden.</div>';
+    container.innerHTML='<div class="pv-loading">Vorschau nicht verfügbar – das PDF wurde trotzdem erzeugt. Bitte „PDF herunterladen“ verwenden.</div>';
   }
 }
 function setAns(path, val){
